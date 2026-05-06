@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <title>Feildiagnose-skjema for sykkel</title>
+
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      margin: 25px;
+      color: #000;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 14px;
+      margin-top: 20px;
+      border-bottom: 1px solid #000;
+      padding-bottom: 4px;
+    }
+
+    .section {
+      margin-bottom: 18px;
+    }
+
+    .field {
+      margin-bottom: 8px;
+    }
+
+    .label {
+      display: inline-block;
+      width: 180px;
+      font-weight: bold;
+    }
+
+    .line {
+      display: inline-block;
+      width: 320px;
+      border-bottom: 1px solid #000;
+      height: 14px;
+    }
+
+    .checkbox-group label {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .image-box {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    .image-box img {
+      max-width: 100%;
+      max-height: 160px;
+      border: 1px solid #000;
+    }
+
+    .textarea {
+      border: 1px solid #000;
+      height: 90px;
+      margin-top: 5px;
+    }
+
+    .small {
+      font-size: 10px;
+    }
+
+    @media print {
+      body {
+        margin: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Feildiagnose-skjema for sykkel</h1>
+
+<!-- Kundeinformasjon -->
+<div class="section">
+  <h2>1. Kundeinformasjon</h2>
+
+  <div class="field">
+    <span class="label">Kundens navn:</span>
+    <span class="line"></span>
+  </div>
+
+  <div class="field">
+    <span class="label">Inngangsdato:</span>
+    <span class="line"></span>
+  </div>
+
+  <div class="field">
+    <span class="label">Telefon:</span>
+    <span class="line"></span>
+  </div>
+
+  <div class="field">
+    <span class="label">Sykkelmerke og modell:</span>
+    <span class="line"></span>
+  </div>
+</div>
+
+<!-- Type sykkel -->
+<div class="section">
+  <h2>2. Type sykkel</h2>
+  ☐ Terreng (MTB)  
+  ☐ Landevei  
+  ☐ El-sykkel  
+  ☐ Bysykkel  
+  ☐ Hybrid  
+  ☐ Gravel
+</div>
+
+<!-- Ønsket service -->
+<div class="section">
+  <h2>3. Ønsket service</h2>
+  ☐ Generelt vedlikehold  
+  ☐ Reparasjon  
+  ☐ Justering  
+  ☐ Bytte av deler
+</div>
+
+<!-- Diagnostiske områder -->
+<div class="section">
+  <h2>4. Feildiagnose per område</h2>
+
+  <strong>Hjul og dekk</strong><br>
+  ☐ Punktering ☐ Slitte dekk ☐ Hjul ute av sentrum ☐ Ødelagte eiker ☐ Annet
+  <div class="image-box">
+    <img src="imgs/hjul-dekk.png" alt="Hjul og dekk">
+  </div>
+
+  <strong>Bremser</strong><br>
+  ☐ Lite bremseeffekt ☐ Støy ☐ Slitte klosser ☐ Skadet kabel/slange ☐ Annet
+  <div class="image-box">
+    <img src="imgs/bremser.png" alt="Bremser">
+  </div>
+
+  <strong>Drivverk (gir)</strong><br>
+  ☐ Vanskelig giring ☐ Kjeden hopper ☐ Slitasje ☐ Gir fungerer ikke ☐ Annet
+  <div class="image-box">
+    <img src="imgs/drivverk-gir.png" alt="Drivverk">
+  </div>
+
+  <strong>Pedaler og krank</strong><br>
+  ☐ Løse pedaler ☐ Knakking ☐ Problem med krank ☐ Annet
+  <div class="image-box">
+    <img src="imgs/krank-pedal.png" alt="Pedaler og krank">
+  </div>
+
+  <strong>Styre og styring</strong><br>
+  ☐ Løst styre ☐ Treg styring ☐ Ustabil front ☐ Annet
+  <div class="image-box">
+    <img src="imgs/styre-styring.png" alt="Styre og styring">
+  </div>
+
+  <strong>Sete og setepinne</strong><br>
+  ☐ Ubehagelig sete ☐ Skjevt sete ☐ Setepinne siger ☐ Annet
+  <div class="image-box">
+    <img src="imgs/sete-setepinne.png" alt="Sete og setepinne">
+  </div>
+</div>
+
+<!-- Andre problemer -->
+<div class="section">
+  <h2>5. Andre problemer / Kommentarer</h2>
+  <div class="textarea"></div>
+</div>
+
+<!-- Signatur -->
+<div class="section">
+  <h2>6. Bekreftelse</h2>
+
+  <div class="field">
+    <span class="label">Kundens signatur:</span>
+    <span class="line"></span>
+  </div>
+
+  <div class="field">
+    <span class="label">Mekaniker:</span>
+    <span class="line"></span>
+  </div>
+
+  <p class="small">
+    Kunden godtar å bli kontaktet med prisoverslag før større reparasjoner utføres.
+  </p>
+</div>
+
+</body>
+</html>

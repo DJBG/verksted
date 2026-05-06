@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>Visuell serviceoversikt – Sykkel</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    margin: 35px;
+    color: #000;
+  }
+
+  h1 {
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  h2 {
+    font-size: 14px;
+    margin-top: 20px;
+    border-bottom: 1px solid #000;
+    padding-bottom: 3px;
+  }
+
+  .info {
+  border: 1px solid #000;
+  padding: 14px;          /* más espacio interno */
+  margin-bottom: 20px;   /* separa mejor del contenido */
+  line-height: 1.8;      /* más espacio para escribir */
+}
+
+  .layout {
+    display: grid;
+    grid-template-columns: 0.85fr 1.35fr;
+    gap: 16px;
+  }
+
+  /* Imagen bicicleta */
+  .bike-image {
+    border: 1px solid #000;
+    padding: 6px;
+    text-align: center;
+  }
+
+  .bike-image img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+  }
+
+  @media print {
+    .bike-image img {
+      max-height: 180px;
+    }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    table-layout: fixed; /* 🔑 mantiene proporciones */
+  }
+
+  th, td {
+    border: 1px solid #000;
+    padding: 6px;
+    vertical-align: top;
+    word-wrap: break-word;
+  }
+
+  /* Filas altas para escribir */
+  .parts-row td {
+    height: 36px; /* doble altura */
+  }
+  /*
+  .parts-row td { height: 54px; }  triple altura
+  */
+
+</style>
+</head>
+
+<body>
+
+<h1>Visuell serviceoversikt – Sykkel</h1>
+
+<div class="info">
+  <strong>Kunde:</strong> ____________________________<br>
+  <strong>Sykkel:</strong> ___________________________<br>
+  <strong>Dato:</strong> ____________ &nbsp;&nbsp;
+  <strong>Ordrenr:</strong> ____________
+</div>
+
+<div class="layout">
+
+  <!-- Imagen bicicleta -->
+  <div class="bike-image">
+    <img
+      src="imgs/ilustrasjon.png"
+      alt="Ilustración de bicicleta con áreas de servicio"
+    >
+  </div>
+
+  <!-- Tabla de áreas -->
+  <div>
+    <table>
+      <tr>
+        <!-- 👇 anchos ajustados -->
+        <th style="width:8%;">Nr</th>
+        <th style="width:22%;">Område</th>
+        <th style="width:70%;">Utført arbeid</th>
+      </tr>
+
+      <tr>
+        <td>1</td>
+        <td>Hjul og dekk</td>
+        <td>☐ Justert ☐ Reparert ☐ Byttet deler</td>
+      </tr>
+
+      <tr>
+        <td>2</td>
+        <td>Bremser</td>
+        <td>☐ Justert ☐ Reparert ☐ Byttet deler</td>
+      </tr>
+
+      <tr>
+        <td>3</td>
+        <td>Drivverk / Krank</td>
+        <td>☐ Justert ☐ Reparert ☐ Byttet deler</td>
+      </tr>
+
+      <tr>
+        <td>4</td>
+        <td>Styre / styring</td>
+        <td>☐ Justert ☐ Reparert ☐ Byttet deler</td>
+      </tr>
+
+      <tr>
+        <td>5</td>
+        <td>Sete / setepinne</td>
+        <td>☐ Justert ☐ Reparert ☐ Byttet deler</td>
+      </tr>
+<tr>
+        <td>6</td>
+        <td>Sjkerm</td>
+        <td>☐ Justert ☐ Reparert ☐ Byttet deler</td>
+      </tr>
+
+
+    </table>
+  </div>
+
+</div>
+
+<h2>Byttede deler</h2>
+
+<table>
+  <tr>
+    <th style="width:50%;">Del</th>
+    <th style="width:50%;">Kommentar</th>
+  </tr>
+
+  <!-- 10 filas altas -->
+  <tr class="parts-row"><td></td><td></td></tr>
+  <tr class="parts-row"><td></td><td></td></tr>
+  <tr class="parts-row"><td></td><td></td></tr>
+  <tr class="parts-row"><td></td><td></td></tr>
+  <tr class="parts-row"><td></td><td></td></tr>
+  <tr class="parts-row"><td></td><td></td></tr>
+  <tr class="parts-row"><td></td><td></td></tr>
+  <tr class="parts-row"><td></td><td></td></tr>
+  <tr class="parts-row"><td></td><td></td></tr>
+  <tr class="parts-row"><td></td><td></td></tr>
+</table>
+
+<h2>Kommentar fra verksted</h2>
+
+<table>
+  <tr>
+    <td style="height:90px;"></td>
+  </tr>
+</table>
+
+</body>
+</html>

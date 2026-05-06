@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="no" class="dark">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feildiagnose-skjema for Sykkel</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Configurar Tailwind para dark mode por clase
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                DEFAULT: '#0284c7',
+              }
+            }
+          }
+        }
+      };
+      // Mantener preferencia en localStorage
+      function initTheme() {
+        const storedTheme = localStorage.getItem('theme');
+        const root = document.documentElement;
+        if (storedTheme === 'light') {
+          root.classList.remove('dark');
+        } else {
+          root.classList.add('dark'); // por defecto oscuro
+        }
+      }
+
+      function toggleTheme() {
+        const root = document.documentElement;
+        const isDark = root.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      }
+      document.addEventListener('DOMContentLoaded', initTheme);
+    </script>
+  </head>
+  <body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
+    <!-- Botón modo claro/oscuro -->
+    <button onclick="toggleTheme()" class="fixed z-50 top-4 right-4 flex items-center gap-2 rounded-full bg-slate-900 text-slate-100 dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-xs font-semibold shadow-lg shadow-slate-900/40 dark:shadow-slate-900/70 hover:scale-105 transition-transform">
+      <span class="hidden sm:inline">Lys / Mørk modus</span>
+      <span class="sm:hidden">🌗</span>
+    </button>
+    <main class="px-3 py-6 sm:py-10 sm:px-6">
+      <div class="max-w-5xl mx-auto bg-white dark:bg-slate-900/90 border border-slate-200/70 dark:border-slate-700/80 rounded-3xl shadow-xl shadow-slate-900/30 p-4 sm:p-6 lg:p-8 backdrop-blur">
+        <!-- Header -->
+        <header class="mb-6 sm:mb-8">
+          <div class="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-400">
+            <span class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_3px_rgba(52,211,153,0.35)]"></span> Sykkelverksted · Feildiagnose
+          </div>
+          <h1 class="mt-3 text-xl sm:text-2xl font-semibold tracking-tight"> Feildiagnose-skjema for sykkel </h1>
+          <p class="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400"> Marker områdene hvor du opplever problemer, og beskriv gjerne mer under «Andre problemer». </p>
+        </header>
+        <form action="#" method="POST" class="space-y-6">
+          <!-- Grid principal -->
+          <div class="grid gap-5 lg:grid-cols-[1.05fr_1.6fr]">
+            <!-- Columna izquierda: info cliente + tipo servicio -->
+            <div class="space-y-4">
+              <!-- Tarjeta: Cliente -->
+              <section class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/90 p-4 sm:p-5 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <h2 class="text-sm font-semibold">Kundeinformasjon</h2>
+                  <span class="rounded-full border border-red-400/60 bg-red-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-red-400"> Obligatorisk </span>
+                </div>
+                <div class="space-y-3">
+                  <div>
+                    <label for="kundens_navn" class="block text-xs font-medium mb-1">Kundens navn</label>
+                    <input id="kundens_navn" name="kundens_navn" type="text" required class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white/80 dark:bg-slate-900/80 px-3 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                  </div>
+                  <div class="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <label for="inngangsdato" class="block text-xs font-medium mb-1">Inngangsdato</label>
+                      <input id="inngangsdato" name="inngangsdato" type="date" required class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white/80 dark:bg-slate-900/80 px-3 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                    </div>
+                    <div>
+                      <label for="telefon" class="block text-xs font-medium mb-1">Telefon (valgfritt)</label>
+                      <input id="telefon" name="telefon" type="text" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white/80 dark:bg-slate-900/80 px-3 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                    </div>
+                  </div>
+                  <div>
+                    <label for="sykkelmodell" class="block text-xs font-medium mb-1">Sykkelmerke og modell</label>
+                    <input id="sykkelmodell" name="sykkelmodell" type="text" required class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white/80 dark:bg-slate-900/80 px-3 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                    <p class="mt-1 text-[12px] text-slate-500 dark:text-slate-400"> Inkluder gjerne år. </p>
+                  </div>
+                </div>
+              </section>
+              <!-- Tarjeta: Tipo de bicicleta -->
+              <section class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/90 p-4 sm:p-5 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <h2 class="text-sm font-semibold">Type sykkel</h2>
+                  <span class="rounded-full border border-slate-400/60 bg-slate-500/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300"> Valgfritt </span>
+                </div>
+                <p class="text-[12px] text-slate-600 dark:text-slate-400 mb-1"> Velg én eller flere sykkeltyper. </p>
+                <div class="flex flex-wrap gap-2">
+                  <label class="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-600 bg-white/75 dark:bg-slate-900/80 px-3 py-1 text-[12px] cursor-pointer">
+                    <input type="checkbox" name="sykkeltype[]" value="Terreng" class="h-3 w-3 rounded border-slate-400"> Terreng (MTB) </label>
+                  <label class="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-600 bg-white/75 dark:bg-slate-900/80 px-3 py-1 text-[12px] cursor-pointer">
+                    <input type="checkbox" name="sykkeltype[]" value="Landevei" class="h-3 w-3 rounded border-slate-400"> Landevei </label>
+                  <label class="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-600 bg-white/75 dark:bg-slate-900/80 px-3 py-1 text-[12px] cursor-pointer">
+                    <input type="checkbox" name="sykkeltype[]" value="El-sykkel" class="h-3 w-3 rounded border-slate-400"> El-sykkel </label>
+                  <label class="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-600 bg-white/75 dark:bg-slate-900/80 px-3 py-1 text-[12px] cursor-pointer">
+                    <input type="checkbox" name="sykkeltype[]" value="By" class="h-3 w-3 rounded border-slate-400"> Bysykkel </label>
+                  <label class="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-600 bg-white/75 dark:bg-slate-900/80 px-3 py-1 text-[12px] cursor-pointer">
+                    <input type="checkbox" name="sykkeltype[]" value="Hybrid" class="h-3 w-3 rounded border-slate-400"> Hybrid </label>
+                  <label class="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-600 bg-white/75 dark:bg-slate-900/80 px-3 py-1 text-[12px] cursor-pointer">
+                    <input type="checkbox" name="sykkeltype[]" value="Annet" class="h-3 w-3 rounded border-slate-400"> Annet </label>
+                </div>
+              </section>
+              <!-- Tarjeta: Tipo de servicio -->
+              <section class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/90 p-4 sm:p-5 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <h2 class="text-sm font-semibold">Ønsket service</h2>
+                  <span class="rounded-full border border-slate-400/60 bg-slate-500/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300"> Valgfritt </span>
+                </div>
+                <!-- Texto explicativo con ejemplos -->
+                <div class="text-[12px] text-slate-600 dark:text-slate-400 space-y-1.5">
+                  <p> Du kan velge flere alternativer. Dette hjelper oss å forstå hva du hovedsakelig ønsker gjort. </p>
+                  <ul class="list-disc pl-4 space-y-0.5">
+                    <li>
+                      <strong>Generelt vedlikehold</strong>: f.eks. full gjennomgang, smøring, sjekk av alle skruer og slitedeler.
+                    </li>
+                    <li>
+                      <strong>Reparasjon</strong>: f.eks. noe er ødelagt – knekt del, punktering, defekt komponent.
+                    </li>
+                    <li>
+                      <strong>Justering</strong>: f.eks. finjustering av gir eller bremser, retting av hjul.
+                    </li>
+                    <li>
+                      <strong>Bytte av deler</strong>: f.eks. nye bremseklosser, dekk, kjede, kassett osv.
+                    </li>
+                  </ul>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <label class="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-600 bg-white/75 dark:bg-slate-900/80 px-3 py-1 text-[12px] cursor-pointer">
+                    <input type="checkbox" name="service[]" value="Generelt vedlikehold" class="h-3 w-3 rounded border-slate-400"> Generelt vedlikehold </label>
+                  <label class="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-600 bg-white/75 dark:bg-slate-900/80 px-3 py-1 text-[12px] cursor-pointer">
+                    <input type="checkbox" name="service[]" value="Reparasjon" class="h-3 w-3 rounded border-slate-400"> Reparasjon </label>
+                  <label class="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-600 bg-white/75 dark:bg-slate-900/80 px-3 py-1 text-[12px] cursor-pointer">
+                    <input type="checkbox" name="service[]" value="Justering" class="h-3 w-3 rounded border-slate-400"> Justering </label>
+                  <label class="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-600 bg-white/75 dark:bg-slate-900/80 px-3 py-1 text-[12px] cursor-pointer">
+                    <input type="checkbox" name="service[]" value="Bytte av deler" class="h-3 w-3 rounded border-slate-400"> Bytte av deler </label>
+                </div>
+              </section>
+            </div>
+            <!-- Columna derecha: secciones con imagen -->
+            <div class="space-y-4">
+              <!-- 1. Elsykkel / Elektrisk system -->
+              <section class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/90 p-3 sm:p-4 lg:p-5 grid gap-3 sm:gap-4 lg:grid-cols-[1.1fr_1.1fr] items-center">
+                <div>
+                  <h2 class="flex items-center gap-2 text-sm font-semibold mb-1">
+                    <span class="flex h-5 w-5 items-center justify-center rounded-full
+             bg-orange-500/10 text-[12px] text-orange-500
+             border border-orange-400/60"> 1 </span> Elsykkel / Elektrisk system
+                  </h2>
+                  <p class="mb-2 text-[12px] text-slate-600 dark:text-slate-400"> Motor, batteri, display, sensorer og elektriske tilkoblinger. </p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[12px]">
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_elsykkel[]" value="Motor fungerer ikke" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Motor fungerer ikke</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_elsykkel[]" value="Ujevn assistanse" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Ujevn / rykkete assistanse</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_elsykkel[]" value="Batteriet lades ikke" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Batteriet lades ikke</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_elsykkel[]" value="Kort rekkevidde" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Kort rekkevidde</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_elsykkel[]" value="Display fungerer ikke" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Display / skjerm fungerer ikke</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_elsykkel[]" value="Feilmelding" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Feilmelding på display</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer sm:col-span-2">
+                      <input type="checkbox" name="problema_elsykkel[]" value="Annet" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Annet elektrisk problem</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="relative">
+                  <img src="imgs/elsykkel.png" alt="Elsykkel elektrisk system" class="w-full rounded-xl shadow-md shadow-slate-900/40
+       object-contain sm:object-cover
+       max-h-52">
+                  <span class="absolute bottom-2 left-2 rounded-full bg-slate-900/80 text-slate-100 text-[10px] px-2 py-0.5 flex items-center gap-1">
+                    <span class="h-1.5 w-1.5 rounded-full bg-orange-500"></span> Motor / Batteri / Display </span>
+                </div>
+              </section>
+              <!-- 2. Hjul og dekk -->
+              <section class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/90 p-3 sm:p-4 lg:p-5 grid gap-3 sm:gap-4 lg:grid-cols-[1.1fr_1.1fr] items-center">
+                <div>
+                  <h2 class="flex items-center gap-2 text-sm font-semibold mb-1">
+                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-sky-500/10 text-[12px] text-sky-500 border border-sky-400/50"> 2 </span> Hjul og dekk
+                  </h2>
+                  <p class="mb-2 text-[12px] text-slate-600 dark:text-slate-400"> Området rundt hjul, dekk, felg, eiker og ventil. </p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[12px]">
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_hjul[]" value="Dekkene er flate" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Dekkene er flate ofte</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_hjul[]" value="Punktering" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Punktering</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_hjul[]" value="Slitte dekk" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Slitte dekk</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_hjul[]" value="Hjul ute av sentrum" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Hjul ute av sentrum / slingrer</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_hjul[]" value="Ødelagte eiker" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Ødelagte / løse eiker</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer sm:col-span-2">
+                      <input type="checkbox" name="problema_hjul[]" value="Annet" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Annet på hjul/dekk</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="relative">
+                  <img src="imgs/hjul-dekk.png" class="w-full rounded-xl shadow-md shadow-slate-900/40
+       object-contain sm:object-cover
+       max-h-52">
+                  <span class="absolute bottom-2 left-2 rounded-full bg-slate-900/80 text-slate-100 text-[10px] px-2 py-0.5 flex items-center gap-1 dark:bg-slate-800/90">
+                    <span class="h-1.5 w-1.5 rounded-full bg-sky-400"></span> Hjul / Dekk </span>
+                </div>
+              </section>
+              <!-- 3. Bremser -->
+              <section class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/90 p-3 sm:p-4 lg:p-5 grid gap-3 sm:gap-4 lg:grid-cols-[1.1fr_1.1fr] items-center">
+                <div>
+                  <h2 class="flex items-center gap-2 text-sm font-semibold mb-1">
+                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500/10 text-[12px] text-rose-500 border border-rose-400/60"> 3 </span> Bremser
+                  </h2>
+                  <p class="mb-2 text-[12px] text-slate-600 dark:text-slate-400"> Skivebremser eller felgbremser, bremseklosser, hendler og kabler/slanger. </p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[12px]">
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_bremser[]" value="Lite effektive bremser" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Lite effektive bremser</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_bremser[]" value="Støyende bremser" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Støyende bremser</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_bremser[]" value="Løs bremsehendel" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Løs bremsehendel</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_bremser[]" value="Slitte bremseklosser" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Slitte bremseklosser</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_bremser[]" value="Skadet bremsekabel" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Skadet bremsekabel / slange</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer sm:col-span-2">
+                      <input type="checkbox" name="problema_bremser[]" value="Annet" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Annet på bremser</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="relative">
+                  <img src="imgs/bremser.png" alt="Skivebremse på sykkel" class="w-full rounded-xl shadow-md shadow-slate-900/40
+       object-contain sm:object-cover
+       max-h-52">
+                  <span class="absolute bottom-2 left-2 rounded-full bg-slate-900/80 text-slate-100 text-[10px] px-2 py-0.5 flex items-center gap-1">
+                    <span class="h-1.5 w-1.5 rounded-full bg-rose-400"></span> Bremse </span>
+                </div>
+              </section>
+              <!-- 4. Drivverk -->
+              <section class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/90 p-3 sm:p-4 lg:p-5 grid gap-3 sm:gap-4 lg:grid-cols-[1.1fr_1.1fr] items-center">
+                <div>
+                  <h2 class="flex items-center gap-2 text-sm font-semibold mb-1">
+                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500/10 text-[12px] text-amber-500 border border-amber-400/60"> 4 </span> Drivverk (gir)
+                  </h2>
+                  <p class="mb-2 text-[12px] text-slate-600 dark:text-slate-400"> Kjede, drev, krank, kassett og girskiftere. </p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[12px]">
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_drivverk[]" value="Vanskelig å skifte gir" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Vanskelig å skifte gir</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_drivverk[]" value="Kjeden hopper" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Kjeden hopper av</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_drivverk[]" value="Kjeden er løs" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Kjeden er løs / slarkete</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_drivverk[]" value="Slitte drev eller kjedehjul" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Slitte drev eller kjedehjul</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_drivverk[]" value="Gir fungerer ikke riktig" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Gir fungerer ikke riktig</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer sm:col-span-2">
+                      <input type="checkbox" name="problema_drivverk[]" value="Annet" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Annet på drivverk</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="relative">
+                  <img src="imgs/drivverk-gir.png" alt="Drivverk på sykkel" class="w-full rounded-xl shadow-md shadow-slate-900/40
+       object-contain sm:object-cover
+       max-h-52">
+                  <span class="absolute bottom-2 left-2 rounded-full bg-slate-900/80 text-slate-100 text-[10px] px-2 py-0.5 flex items-center gap-1">
+                    <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span> Drivverk / Gir </span>
+                </div>
+              </section>
+              <!-- 5. Pedaler og krank -->
+              <section class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/90 p-3 sm:p-4 lg:p-5 grid gap-3 sm:gap-4 lg:grid-cols-[1.1fr_1.1fr] items-center">
+                <div>
+                  <h2 class="flex items-center gap-2 text-sm font-semibold mb-1">
+                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/10 text-[12px] text-emerald-500 border border-emerald-400/60"> 5 </span> Pedaler og krank
+                  </h2>
+                  <p class="mb-2 text-[12px] text-slate-600 dark:text-slate-400"> Pedaler, krankarmer og området rundt pedalaksling. </p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[12px]">
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_pedaler[]" value="Løse pedaler" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Løse pedaler</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_pedaler[]" value="Lyder fra pedalene" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Knakker / lyder når du tråkker</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_pedaler[]" value="Problemer med krankarmen" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Problemer med krankarmen</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer sm:col-span-2">
+                      <input type="checkbox" name="problema_pedaler[]" value="Annet" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Annet på pedaler/krank</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="relative">
+                  <img src="imgs/krank-pedal.png" alt="Kranksett og Pedaler" class="w-full rounded-xl shadow-md shadow-slate-900/40
+       object-contain sm:object-cover
+       max-h-52">
+                  <span class="absolute bottom-2 left-2 rounded-full bg-slate-900/80 text-slate-100 text-[10px] px-2 py-0.5 flex items-center gap-1">
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Kranksett / Pedaler </span>
+                </div>
+              </section>
+              <!-- 6. Styre og styring -->
+              <section class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/90 p-3 sm:p-4 lg:p-5 grid gap-3 sm:gap-4 lg:grid-cols-[1.1fr_1.1fr] items-center">
+                <div>
+                  <h2 class="flex items-center gap-2 text-sm font-semibold mb-1">
+                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-500/10 text-[12px] text-indigo-500 border border-indigo-400/60"> 6 </span> Styre og styring
+                  </h2>
+                  <p class="mb-2 text-[12px] text-slate-600 dark:text-slate-400"> Styret, styrelager, stem og området rundt fronten. </p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[12px]">
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_styring[]" value="Løst styre" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Løst styre</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_styring[]" value="Vanskelig å styre" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Vanskelig å styre / treg styring</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer sm:col-span-2">
+                      <input type="checkbox" name="problema_styring[]" value="Ustabil styring" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Ustabil følelse i fronten</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer sm:col-span-2">
+                      <input type="checkbox" name="problema_styring[]" value="Annet" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Annet på styre/styring</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="relative">
+                  <img src="imgs/styre-styring.png" alt="Styre og styring" class="w-full rounded-xl shadow-md shadow-slate-900/40
+       object-contain sm:object-cover
+       max-h-52">
+                  <span class="absolute bottom-2 left-2 rounded-full bg-slate-900/80 text-slate-100 text-[10px] px-2 py-0.5 flex items-center gap-1">
+                    <span class="h-1.5 w-1.5 rounded-full bg-indigo-400"></span> Styre / Styrelager </span>
+                </div>
+              </section>
+              <!-- 7. Sete og setepinne -->
+              <section class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/90 p-3 sm:p-4 lg:p-5 grid gap-3 sm:gap-4 lg:grid-cols-[1.1fr_1.1fr] items-center">
+                <div>
+                  <h2 class="flex items-center gap-2 text-sm font-semibold mb-1">
+                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-fuchsia-500/10 text-[12px] text-fuchsia-500 border border-fuchsia-400/60"> 7 </span> Sete og setepinne
+                  </h2>
+                  <p class="mb-2 text-[12px] text-slate-600 dark:text-slate-400"> Sadel, setepinne og klemme. </p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[12px]">
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_sete[]" value="Ubehagelig sete" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Ubehagelig sete</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_sete[]" value="Skjevt sete" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Setet står skjevt</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" name="problema_sete[]" value="Løs setepinne" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Løs setepinne / siger ned</span>
+                    </label>
+                    <label class="inline-flex items-start gap-2 cursor-pointer sm:col-span-2">
+                      <input type="checkbox" name="problema_sete[]" value="Annet" class="mt-0.5 h-3 w-3 rounded border-slate-400">
+                      <span>Annet på sete/setepinne</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="relative">
+                  <img src="imgs/sete-setepinne.png" alt="Sykkelsete og setepinne" class="w-full rounded-xl shadow-md shadow-slate-900/40
+       object-contain sm:object-cover
+       max-h-52">
+                  <span class="absolute bottom-2 left-2 rounded-full bg-slate-900/80 text-slate-100 text-[10px] px-2 py-0.5 flex items-center gap-1">
+                    <span class="h-1.5 w-1.5 rounded-full bg-fuchsia-400"></span> Sete / Setepinne </span>
+                </div>
+              </section>
+              <!-- 8. Andre problemer -->
+              <section class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/90 p-4 sm:p-5">
+                <h2 class="text-sm font-semibold mb-1">8. Andre problemer</h2>
+                <p class="mb-2 text-[12px] text-slate-600 dark:text-slate-400"> Beskriv gjerne lyder, følelser i rammen, elektriske problemer, demper osv. </p>
+                <textarea id="andre_problemer" name="andre_problemer" rows="3" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white/80 dark:bg-slate-900/80 px-3 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" placeholder="F.eks.: ulyd fra rammen, problemer med el-system, demper som føles hard/myk, osv."></textarea>
+              </section>
+            </div>
+          </div>
+          <!-- Botón enviar -->
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+            <p class="text-[12px] text-slate-600 dark:text-slate-400 max-w-md"> Ved å sende inn skjemaet godtar du at verkstedet kontakter deg med prisoverslag før større reparasjoner. </p>
+            <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-lg shadow-emerald-500/40 hover:bg-emerald-600 transition-colors">
+              <span>Send inn skjema</span>
+              <span>✅</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </body>
+</html>

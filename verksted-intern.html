@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="no" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verksted – Intern arbeidsordre</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' };</script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+    * { font-family: 'DM Sans', sans-serif; box-sizing: border-box; }
+    .mono { font-family: 'DM Mono', monospace; }
+
+    body { background: #060b14; color: #e2e8f0; min-height: 100vh; }
+
+    /* Layout */
+    .app { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+    @media (max-width: 768px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* Sidebar */
+    .sidebar {
+      background: #0a1120;
+      border-right: 1px solid #1e293b;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sidebar-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #475569;
+      padding: 0 8px;
+      margin-bottom: 4px;
+      margin-top: 16px;
+    }
+    .sidebar-title:first-child { margin-top: 0; }
+    .order-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+    .order-item:hover { background: #111827; }
+    .order-item.active { background: #0f1e33; border-color: #0ea5e9; }
+    .order-item .order-name { font-size: 13px; font-weight: 600; }
+    .order-item .order-meta { font-size: 11px; color: #64748b; margin-top: 2px; }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+      margin-top: 4px;
+    }
+    .dot-pending { background: #f59e0b; box-shadow: 0 0 6px #f59e0b88; }
+    .dot-approved { background: #22c55e; box-shadow: 0 0 6px #22c55e88; }
+    .dot-rejected { background: #ef4444; box-shadow: 0 0 6px #ef444488; }
+    .dot-done { background: #64748b; }
+    .dot-new { background: #0ea5e9; box-shadow: 0 0 6px #0ea5e988; }
+
+    /* Main */
+    .main { padding: 32px; overflow-y: auto; }
+    @media (max-width: 768px) { .main { padding: 16px; } }
+
+    /* Cards */
+    .card {
+      background: #0a1120;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .card-highlight {
+      background: #0a1120;
+      border: 1px solid #0ea5e9;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 0 0 3px rgba(14,165,233,0.08);
+    }
+
+    /* Badges */
+    .badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 99px;
+    }
+    .badge-new { background: rgba(14,165,233,0.15); color: #0ea5e9; border: 1px solid rgba(14,165,233,0.3); }
+    .badge-pending { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+    .badge-approved { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+    .badge-rejected { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+    .badge-done { background: rgba(100,116,139,0.15); color: #94a3b8; border: 1px solid rgba(100,116,139,0.3); }
+
+    /* Section label */
+    .section-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #475569; margin-bottom: 8px;
+    }
+
+    /* Problem chips */
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #111827; border: 1px solid #1e293b;
+      border-radius: 8px; padding: 5px 10px;
+      font-size: 12px; color: #94a3b8;
+    }
+
+    /* Finding form */
+    .finding-row {
+      display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: start;
+      padding: 12px; background: #060b14; border: 1px solid #1e293b;
+      border-radius: 10px; margin-bottom: 8px;
+      transition: border-color 0.2s;
+    }
+    .finding-row:hover { border-color: #334155; }
+    .finding-row.approved { border-color: #22c55e44; background: #022c1644; }
+    .finding-row.rejected { border-color: #ef444433; background: #1c030344; }
+    .finding-row.pending { border-color: #f59e0b44; background: #1c0f0044; }
+
+    input[type="text"], input[type="number"], select, textarea {
+      background: #111827; border: 1px solid #1e293b; border-radius: 8px;
+      padding: 7px 10px; font-size: 13px; color: #e2e8f0; width: 100%;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: #0ea5e9;
+      box-shadow: 0 0 0 2px rgba(14,165,233,0.15);
+    }
+    select { cursor: pointer; }
+
+    /* Buttons */
+    .btn {
+      padding: 8px 16px; border-radius: 99px; font-size: 13px;
+      font-weight: 600; cursor: pointer; border: none; transition: all 0.15s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: #0ea5e9; color: white; }
+    .btn-primary:hover { background: #0284c7; }
+    .btn-ghost { background: transparent; color: #64748b; border: 1px solid #1e293b; }
+    .btn-ghost:hover { border-color: #334155; color: #94a3b8; }
+    .btn-danger { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+    .btn-success { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
+    .btn-success:hover { background: rgba(34,197,94,0.2); }
+    .btn-sm { padding: 5px 12px; font-size: 12px; }
+    .btn-add {
+      width: 100%; padding: 10px; border-radius: 10px; font-size: 13px;
+      font-weight: 500; cursor: pointer; background: transparent;
+      border: 1px dashed #1e293b; color: #475569;
+      transition: all 0.15s; text-align: center;
+    }
+    .btn-add:hover { border-color: #0ea5e9; color: #0ea5e9; background: rgba(14,165,233,0.05); }
+
+    /* Timeline */
+    .timeline-item { display: flex; gap: 12px; padding: 10px 0; }
+    .timeline-line { display: flex; flex-direction: column; align-items: center; }
+    .timeline-dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; flex-shrink: 0; margin-top: 4px; }
+    .timeline-connector { width: 1px; background: #1e293b; flex: 1; margin-top: 4px; }
+    .timeline-text { font-size: 12px; color: #64748b; padding-bottom: 8px; }
+    .timeline-text strong { color: #94a3b8; }
+
+    /* Totals */
+    .total-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 1px solid #1e293b; }
+    .total-row:last-child { border-bottom: none; font-weight: 700; font-size: 15px; color: #e2e8f0; }
+
+    /* Status bar top */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 32px; background: #0a1120;
+      border-bottom: 1px solid #1e293b;
+      position: sticky; top: 0; z-index: 10;
+    }
+    @media (max-width: 768px) { .topbar { padding: 12px 16px; } }
+
+    /* Divider */
+    .divider { height: 1px; background: #1e293b; margin: 20px 0; }
+
+    /* Notification toast */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #0ea5e9; color: white;
+      padding: 12px 20px; border-radius: 12px;
+      font-size: 13px; font-weight: 600;
+      box-shadow: 0 4px 20px rgba(14,165,233,0.4);
+      transform: translateY(80px); opacity: 0;
+      transition: all 0.3s; z-index: 100;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { background: #22c55e; box-shadow: 0 4px 20px rgba(34,197,94,0.4); }
+    .toast.warn { background: #f59e0b; box-shadow: 0 4px 20px rgba(245,158,11,0.4); }
+
+    /* Scroll */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="flex items-center gap-3">
+    <span class="text-lg">🔧</span>
+    <span class="font-bold text-sm tracking-tight">Verksted — Intern</span>
+    <span class="badge badge-new ml-2">Demo</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <span class="text-xs text-slate-500 mono">Onsdag 06.05.2026</span>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- SIDEBAR: lista de órdenes -->
+  <div class="sidebar">
+    <div class="sidebar-title">Aktive ordrer</div>
+
+    <div class="order-item active" onclick="loadOrder('bysykkel')">
+      <div class="flex items-start gap-2">
+        <span class="status-dot dot-pending mt-1"></span>
+        <div>
+          <div class="order-name">Kari Nordmann</div>
+          <div class="order-meta">Bysykkel · Punktering</div>
+          <div class="order-meta">⚠ Funn: Kassett</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-item" onclick="loadOrder('mtb')">
+      <div class="flex items-start gap-2">
+        <span class="status-dot dot-new mt-1"></span>
+        <div>
+          <div class="order-name">Lars Hansen</div>
+          <div class="order-meta">MTB · Bremser, gir</div>
+          <div class="order-meta">Ingen funn ennå</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-item" onclick="loadOrder('elsykkel')">
+      <div class="flex items-start gap-2">
+        <span class="status-dot dot-approved mt-1"></span>
+        <div>
+          <div class="order-name">Ingrid Bakke</div>
+          <div class="order-meta">El-sykkel · Motor</div>
+          <div class="order-meta">✓ Godkjent av kunde</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-title">Fullført i dag</div>
+
+    <div class="order-item" onclick="loadOrder('done')">
+      <div class="flex items-start gap-2">
+        <span class="status-dot dot-done mt-1"></span>
+        <div>
+          <div class="order-name">Ole Berg</div>
+          <div class="order-meta">Landevei · Kjede</div>
+          <div class="order-meta">Hentet kl. 14:30</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN: orden activa -->
+  <div style="display:flex; flex-direction:column; overflow:hidden;">
+    <div class="main" id="orderView">
+      <!-- Se renderiza con JS -->
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATOS DE ÓRDENES ────────────────────────────────────────
+const orders = {
+  bysykkel: {
+    id: 'ORD-2605-01',
+    kunde: 'Kari Nordmann',
+    telefon: '+47 900 12 345',
+    sykkel: 'Trek FX 3 2022 – Bysykkel',
+    innlevert: '2026-05-06',
+    rapportert: ['Punktering – bakhjul'],
+    service: ['Reparasjon'],
+    status: 'pending',
+    funn: [
+      {
+        id: 1,
+        beskrivelse: 'Kassetten er skadet og slitt. Anbefaler bytte.',
+        komponent: 'Kassett',
+        estimat: 850,
+        status: 'pending'
+      }
+    ],
+    logg: [
+      { tid: '08:15', tekst: 'Sykkel innlevert av kunde.' },
+      { tid: '09:40', tekst: 'Mekaniker startet reparasjon – punktering bakhjul.' },
+      { tid: '10:05', tekst: '<strong>Funn registrert:</strong> Kassett skadet. Venter på kundegodkjenning.' }
+    ]
+  },
+  mtb: {
+    id: 'ORD-2605-02',
+    kunde: 'Lars Hansen',
+    telefon: '+47 911 22 333',
+    sykkel: 'Specialized Rockhopper 2021 – MTB',
+    innlevert: '2026-05-06',
+    rapportert: ['Støyende bremser', 'Vanskelig å skifte gir'],
+    service: ['Justering', 'Reparasjon'],
+    status: 'new',
+    funn: [],
+    logg: [
+      { tid: '09:00', tekst: 'Sykkel innlevert.' },
+      { tid: '09:50', tekst: 'Mekaniker startet inspeksjon.' }
+    ]
+  },
+  elsykkel: {
+    id: 'ORD-2605-03',
+    kunde: 'Ingrid Bakke',
+    telefon: '+47 988 77 441',
+    sykkel: 'Trek Allant+ 7S 2023 – El-sykkel',
+    innlevert: '2026-05-06',
+    rapportert: ['Motor fungerer ikke', 'Display viser feilmelding'],
+    service: ['Reparasjon'],
+    status: 'approved',
+    funn: [
+      {
+        id: 1,
+        beskrivelse: 'Løs kontakt til motoren. Enkel reparasjon.',
+        komponent: 'Motorkobling',
+        estimat: 320,
+        status: 'approved'
+      },
+      {
+        id: 2,
+        beskrivelse: 'Firmware på display utdatert. Anbefaler oppdatering.',
+        komponent: 'Display firmware',
+        estimat: 150,
+        status: 'approved'
+      }
+    ],
+    logg: [
+      { tid: '08:30', tekst: 'Sykkel innlevert.' },
+      { tid: '09:15', tekst: 'Funn registrert: motorkobling og display.' },
+      { tid: '09:45', tekst: '<strong>Kunde kontaktet av resepsjon.</strong>' },
+      { tid: '10:00', tekst: '<strong>Kunde godkjente alt ekstra arbeid.</strong>' }
+    ]
+  },
+  done: {
+    id: 'ORD-2605-00',
+    kunde: 'Ole Berg',
+    telefon: '+47 922 44 551',
+    sykkel: 'Giant Defy Advanced 2020 – Landevei',
+    innlevert: '2026-05-06',
+    rapportert: ['Kjeden hopper av'],
+    service: ['Bytte av deler'],
+    status: 'done',
+    funn: [],
+    logg: [
+      { tid: '07:45', tekst: 'Sykkel innlevert.' },
+      { tid: '08:30', tekst: 'Kjede byttet. Ingen ekstra funn.' },
+      { tid: '14:30', tekst: 'Sykkel hentet av kunde.' }
+    ]
+  }
+};
+
+let currentOrderKey = 'bysykkel';
+let findingCounter = 100;
+
+// ─── RENDER PRINCIPAL ────────────────────────────────────────
+function loadOrder(key) {
+  currentOrderKey = key;
+  // Actualizar sidebar
+  document.querySelectorAll('.order-item').forEach((el, i) => {
+    el.classList.remove('active');
+    const keys = ['bysykkel','mtb','elsykkel','done'];
+    if (keys[i] === key) el.classList.add('active');
+  });
+  render();
+}
+
+function render() {
+  const o = orders[currentOrderKey];
+  const view = document.getElementById('orderView');
+
+  const statusMap = {
+    new: { label: 'Ny ordre', cls: 'badge-new' },
+    pending: { label: 'Venter på kunde', cls: 'badge-pending' },
+    approved: { label: 'Godkjent', cls: 'badge-approved' },
+    rejected: { label: 'Avvist', cls: 'badge-rejected' },
+    done: { label: 'Fullført', cls: 'badge-done' }
+  };
+  const st = statusMap[o.status];
+
+  // Calcular totales
+  const totalApproved = o.funn.filter(f => f.status === 'approved').reduce((s, f) => s + f.estimat, 0);
+  const totalPending = o.funn.filter(f => f.status === 'pending').reduce((s, f) => s + f.estimat, 0);
+  const totalBase = 350; // trabajo base (ejemplo)
+
+  view.innerHTML = `
+    <!-- HEADER ORDEN -->
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+      <div>
+        <div class="flex items-center gap-3 mb-1">
+          <span class="mono text-xs text-slate-500">${o.id}</span>
+          <span class="badge ${st.cls}">${st.label}</span>
+        </div>
+        <h1 class="text-xl font-bold">${o.kunde}</h1>
+        <div class="text-sm text-slate-400 mt-1">${o.sykkel}</div>
+        <div class="flex items-center gap-4 mt-2 text-xs text-slate-500">
+          <span>📞 ${o.telefon}</span>
+          <span>📅 Innlevert: ${o.innlevert}</span>
+        </div>
+      </div>
+      ${o.status === 'done' ? '' : `
+      <button class="btn btn-ghost btn-sm" onclick="markDone()">Merk som fullført ✓</button>
+      `}
+    </div>
+
+    <!-- GRID: kunde rapport + funn -->
+    <div class="grid lg:grid-cols-2 gap-5 mb-5">
+
+      <!-- Hva kunden rapporterte -->
+      <div class="card">
+        <div class="section-label">Hva kunden rapporterte</div>
+        <div class="flex flex-col gap-2 mb-3">
+          ${o.rapportert.map(p => `<span class="chip">🔍 ${p}</span>`).join('')}
+        </div>
+        <div class="section-label mt-3">Ønsket service</div>
+        <div class="flex gap-2 flex-wrap">
+          ${o.service.map(s => `<span class="chip">⚙ ${s}</span>`).join('')}
+        </div>
+      </div>
+
+      <!-- Estimat -->
+      <div class="card">
+        <div class="section-label">Estimert kostnad</div>
+        <div class="total-row"><span class="text-slate-400">Bestilt arbeid (basis)</span><span>${totalBase} kr</span></div>
+        ${o.funn.filter(f=>f.status==='approved').map(f=>`
+          <div class="total-row"><span class="text-slate-400">+ ${f.komponent}</span><span class="text-green-400">${f.estimat} kr</span></div>
+        `).join('')}
+        ${totalPending > 0 ? `<div class="total-row"><span class="text-yellow-400">⏳ Venter godkjenning</span><span class="text-yellow-400">+ ${totalPending} kr</span></div>` : ''}
+        <div class="total-row"><span>Totalt</span><span>${totalBase + totalApproved} kr${totalPending > 0 ? ` <span class="text-xs text-yellow-500 font-normal">+ mulig ${totalPending} kr</span>` : ''}</span></div>
+      </div>
+    </div>
+
+    <!-- FUNN UNDER REPARASJON -->
+    <div class="card-highlight mb-5">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <div class="section-label">⚠ Funn under reparasjon</div>
+          <p class="text-xs text-slate-500">Registrer alt som ble oppdaget under arbeidet. Resepsjon kontakter kunden.</p>
+        </div>
+      </div>
+
+      <div id="funn-list">
+        ${o.funn.length === 0 ? `<div class="text-sm text-slate-500 py-4 text-center">Ingen funn registrert ennå.</div>` : ''}
+        ${o.funn.map(f => renderFunn(f)).join('')}
+      </div>
+
+      ${o.status !== 'done' ? `
+      <button class="btn-add mt-2" onclick="addFunn()">+ Legg til funn</button>
+      ` : ''}
+    </div>
+
+    <!-- RESEPSJON: kontakt med kunde -->
+    ${o.funn.some(f => f.status === 'pending') ? `
+    <div class="card mb-5" style="border-color:#f59e0b44; background:#1c0f0033;">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl">📞</span>
+        <div class="flex-1">
+          <div class="font-semibold text-sm text-yellow-400 mb-1">Resepsjon: kontakt kunden</div>
+          <p class="text-xs text-slate-400 mb-3">Det er funn som venter på godkjenning. Ring kunden og oppdater status nedenfor.</p>
+          <div class="flex flex-wrap gap-2">
+            <button class="btn btn-success btn-sm" onclick="approveAll()">✓ Kunde godkjente alt</button>
+            <button class="btn btn-danger btn-sm" onclick="rejectAll()">✗ Kunde avviste alt</button>
+            <button class="btn btn-ghost btn-sm" onclick="showCallLog()">Logg samtale</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    ` : ''}
+
+    <!-- LOGG / HISTORIKK -->
+    <div class="card">
+      <div class="section-label">Aktivitetslogg</div>
+      <div id="logg-list">
+        ${o.logg.map((l, i) => `
+          <div class="timeline-item">
+            <div class="timeline-line">
+              <div class="timeline-dot" style="${i===o.logg.length-1?'background:#0ea5e9;':''} "></div>
+              ${i < o.logg.length - 1 ? '<div class="timeline-connector"></div>' : ''}
+            </div>
+            <div class="timeline-text"><strong>${l.tid}</strong> — ${l.tekst}</div>
+          </div>
+        `).join('')}
+      </div>
+      ${o.status !== 'done' ? `
+      <div class="flex gap-2 mt-3">
+        <input type="text" id="logg-input" placeholder="Legg til notat..." style="flex:1;">
+        <button class="btn btn-ghost btn-sm" onclick="addLogg()">Legg til</button>
+      </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+// ─── RENDER FUNN ─────────────────────────────────────────────
+function renderFunn(f) {
+  const statusMap = {
+    pending: { cls: 'pending', icon: '⏳', label: 'Venter' },
+    approved: { cls: 'approved', icon: '✓', label: 'Godkjent' },
+    rejected: { cls: 'rejected', icon: '✗', label: 'Avvist' }
+  };
+  const st = statusMap[f.status];
+  const isDone = orders[currentOrderKey].status === 'done';
+
+  return `
+    <div class="finding-row ${st.cls}" id="funn-${f.id}">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs font-semibold text-slate-300">${f.komponent}</span>
+          <span class="badge badge-${f.status === 'pending' ? 'pending' : f.status === 'approved' ? 'approved' : 'rejected'}">${st.icon} ${st.label}</span>
+        </div>
+        <div class="text-xs text-slate-400">${f.beskrivelse}</div>
+        <div class="text-xs text-slate-500 mt-1 mono">${f.estimat} kr</div>
+      </div>
+      ${!isDone && f.status === 'pending' ? `
+      <div class="flex flex-col gap-1">
+        <button class="btn btn-success btn-sm" onclick="setFunnStatus(${f.id},'approved')">✓</button>
+        <button class="btn btn-danger btn-sm" onclick="setFunnStatus(${f.id},'rejected')">✗</button>
+      </div>
+      ` : ''}
+      ${!isDone ? `
+      <button class="btn btn-ghost btn-sm" onclick="removeFunn(${f.id})" title="Slett">✕</button>
+      ` : ''}
+    </div>
+  `;
+}
+
+// ─── ACCIONES ────────────────────────────────────────────────
+function addFunn() {
+  const o = orders[currentOrderKey];
+  // Mini modal inline
+  const list = document.getElementById('funn-list');
+  if (document.getElementById('new-funn-form')) return;
+
+  const form = document.createElement('div');
+  form.id = 'new-funn-form';
+  form.style.cssText = 'background:#060b14;border:1px solid #0ea5e9;border-radius:12px;padding:14px;margin-bottom:8px;';
+  form.innerHTML = `
+    <div class="section-label mb-2">Nytt funn</div>
+    <div class="grid gap-2">
+      <input type="text" id="nf-komponent" placeholder="Komponent (f.eks. Kassett, Kjede...)" style="width:100%;">
+      <textarea id="nf-beskrivelse" rows="2" placeholder="Beskriv funnet..." style="width:100%;"></textarea>
+      <div class="flex gap-2">
+        <input type="number" id="nf-estimat" placeholder="Estimat (kr)" style="width:120px;">
+        <button class="btn btn-primary btn-sm" onclick="saveFunn()">Lagre funn</button>
+        <button class="btn btn-ghost btn-sm" onclick="cancelFunn()">Avbryt</button>
+      </div>
+    </div>
+  `;
+  list.appendChild(form);
+  document.getElementById('nf-komponent').focus();
+}
+
+function saveFunn() {
+  const o = orders[currentOrderKey];
+  const komp = document.getElementById('nf-komponent').value.trim();
+  const besk = document.getElementById('nf-beskrivelse').value.trim();
+  const est = parseInt(document.getElementById('nf-estimat').value) || 0;
+
+  if (!komp || !besk) { showToast('Fyll inn komponent og beskrivelse.', 'warn'); return; }
+
+  findingCounter++;
+  o.funn.push({ id: findingCounter, beskrivelse: besk, komponent: komp, estimat: est, status: 'pending' });
+
+  const now = new Date();
+  const tid = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  o.logg.push({ tid, tekst: `<strong>Nytt funn registrert:</strong> ${komp}. Venter på kundegodkjenning.` });
+
+  if (o.status === 'new') o.status = 'pending';
+  showToast('Funn registrert ✓', 'success');
+  render();
+}
+
+function cancelFunn() {
+  const f = document.getElementById('new-funn-form');
+  if (f) f.remove();
+}
+
+function removeFunn(id) {
+  const o = orders[currentOrderKey];
+  o.funn = o.funn.filter(f => f.id !== id);
+  render();
+}
+
+function setFunnStatus(id, status) {
+  const o = orders[currentOrderKey];
+  const funn = o.funn.find(f => f.id === id);
+  if (!funn) return;
+  funn.status = status;
+
+  const now = new Date();
+  const tid = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const label = status === 'approved' ? 'godkjente' : 'avviste';
+  o.logg.push({ tid, tekst: `Kunde ${label} ekstra arbeid: <strong>${funn.komponent}</strong>.` });
+
+  // Si todos los funn tienen estado definido, actualizar orden
+  const allDone = o.funn.every(f => f.status !== 'pending');
+  if (allDone) {
+    const anyApproved = o.funn.some(f => f.status === 'approved');
+    o.status = anyApproved ? 'approved' : 'rejected';
+  }
+
+  showToast(status === 'approved' ? 'Godkjent ✓' : 'Avvist', status === 'approved' ? 'success' : '');
+  render();
+}
+
+function approveAll() {
+  const o = orders[currentOrderKey];
+  o.funn.forEach(f => { if (f.status === 'pending') f.status = 'approved'; });
+  const now = new Date();
+  const tid = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  o.logg.push({ tid, tekst: '<strong>Resepsjon:</strong> Kunde godkjente alt ekstra arbeid.' });
+  o.status = 'approved';
+  showToast('Alt godkjent av kunde ✓', 'success');
+  render();
+}
+
+function rejectAll() {
+  const o = orders[currentOrderKey];
+  o.funn.forEach(f => { if (f.status === 'pending') f.status = 'rejected'; });
+  const now = new Date();
+  const tid = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  o.logg.push({ tid, tekst: '<strong>Resepsjon:</strong> Kunde avviste alt ekstra arbeid.' });
+  o.status = 'rejected';
+  showToast('Avvist av kunde', '');
+  render();
+}
+
+function showCallLog() {
+  const o = orders[currentOrderKey];
+  const msg = prompt('Logg samtale med kunde (kort notat):');
+  if (!msg) return;
+  const now = new Date();
+  const tid = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  o.logg.push({ tid, tekst: `📞 <strong>Resepsjon ringte:</strong> ${msg}` });
+  showToast('Samtale logget', 'success');
+  render();
+}
+
+function addLogg() {
+  const o = orders[currentOrderKey];
+  const input = document.getElementById('logg-input');
+  if (!input || !input.value.trim()) return;
+  const now = new Date();
+  const tid = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  o.logg.push({ tid, tekst: input.value.trim() });
+  showToast('Notat lagt til', 'success');
+  render();
+}
+
+function markDone() {
+  const o = orders[currentOrderKey];
+  const now = new Date();
+  const tid = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  o.logg.push({ tid, tekst: 'Sykkel merket som fullført og klar for henting.' });
+  o.status = 'done';
+  showToast('Merket som fullført ✓', 'success');
+  render();
+}
+
+// ─── TOAST ───────────────────────────────────────────────────
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => { t.classList.remove('show'); }, 2500);
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>

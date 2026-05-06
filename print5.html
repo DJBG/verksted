@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <title>Feildiagnose-skjema for Sykkel - PRINT</title>
+  <style>
+    @page { margin: 8mm; size: A4; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: Arial, sans-serif; 
+      font-size: 9px; 
+      line-height: 1.2; 
+      color: #333; 
+      max-width: 210mm; 
+      margin: 0 auto; 
+      padding: 8mm; 
+      background: white;
+    }
+    .header { 
+      border-bottom: 3px solid #0284c7; 
+      padding-bottom: 6px; 
+      margin-bottom: 10px; 
+    }
+    .header h1 { 
+      font-size: 16px; 
+      font-weight: bold; 
+      color: #0284c7; 
+      margin-bottom: 3px; 
+    }
+    .header p { 
+      font-size: 8.5px; 
+      color: #666; 
+    }
+    .section { 
+      border: 1px solid #ddd; 
+      border-radius: 4px; 
+      padding: 6px; 
+      margin-bottom: 6px; 
+      background: #f9f9f9; 
+    }
+    .section h2 { 
+      font-size: 10px; 
+      font-weight: bold; 
+      margin-bottom: 3px; 
+      color: #0284c7; 
+    }
+    .section p { 
+      font-size: 8px; 
+      color: #666; 
+      margin-bottom: 4px; 
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+    .checkbox-line { 
+      display: flex; 
+      align-items: flex-start; 
+      gap: 3px; 
+      font-size: 8.5px; 
+      margin-bottom: 1px; 
+    }
+    .checkbox-line input[type="checkbox"] { 
+      width: 11px; 
+      height: 11px; 
+      margin-top: 1px; 
+      accent-color: #0284c7; 
+    }
+    input[type="text"], input[type="date"], textarea { 
+      width: 100%; 
+      border: 1px solid #ccc; 
+      border-radius: 3px; 
+      padding: 3px 5px; 
+      font-size: 9px; 
+      margin-bottom: 3px; 
+    }
+    textarea { height: 140px; resize: none; }
+    .required { color: #d32f2f; font-weight: bold; }
+    .grid-main { display: grid; grid-template-columns: 1fr 1.6fr; gap: 8px; }
+    .num-badge { 
+      display: inline-block; 
+      width: 16px; 
+      height: 16px; 
+      background: #0284c7; 
+      color: white; 
+      border-radius: 50%; 
+      font-size: 8px; 
+      font-weight: bold; 
+      text-align: center; 
+      line-height: 16px; 
+      margin-right: 4px; 
+    }
+    @media print { body { -webkit-print-color-adjust: exact; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div style="display: inline-block; background: #e3f2fd; padding: 2px 6px; border-radius: 10px; font-size: 8px; font-weight: bold; color: #0284c7; border: 1px solid #0284c7;">
+      Sykkelverksted · Feildiagnose
+    </div>
+    <h1>Feildiagnose-skjema for sykkel</h1>
+    <p>Marker områdene hvor du opplever problemer, og beskriv gjerne mer under «Andre problemer».</p>
+  </div>
+
+  <form>
+    <div class="grid-main">
+      <!-- COLUMNA IZQUIERDA -->
+      <div>
+        <!-- 1. Kundeinformasjon -->
+        <div class="section">
+          <h2>Kundeinformasjon <span class="required">*</span></h2>
+          <div>
+            <label>Kundens navn <span class="required">*</span></label>
+            <input type="text" name="kundens_navn" required>
+          </div>
+          <div class="grid-2">
+            <div>
+              <label>Inngangsdato <span class="required">*</span></label>
+              <input type="text" name="inngangsdato" required>
+            </div>
+            <div>
+              <label>Telefon</label>
+              <input type="text" name="telefon">
+            </div>
+          </div>
+          <label>Sykkelmerke og modell <span class="required">*</span></label>
+          <input type="text" name="sykkelmodell" required placeholder=" ">
+        </div>
+
+        <!-- 2. Type sykkel -->
+        <div class="section">
+          <h2>Type sykkel</h2>
+          <div class="grid-2">
+            <label class="checkbox-line"><input type="checkbox" name="sykkeltype[]" value="Terreng"> Terreng (MTB)</label>
+            <label class="checkbox-line"><input type="checkbox" name="sykkeltype[]" value="Landevei"> Landevei</label>
+            <label class="checkbox-line"><input type="checkbox" name="sykkeltype[]" value="El-sykkel"> El-sykkel</label>
+            <label class="checkbox-line"><input type="checkbox" name="sykkeltype[]" value="By"> Bysykkel</label>
+          </div>
+          <label class="checkbox-line"><input type="checkbox" name="sykkeltype[]" value="Hybrid"> Hybrid</label>
+          <label class="checkbox-line"><input type="checkbox" name="sykkeltype[]" value="Annet"> Annet</label>
+        </div>
+
+        <!-- 3. Ønsket service -->
+        <div class="section">
+          <h2>Ønsket service</h2>
+          <p style="font-size: 7.5px; margin-bottom: 3px;">Velg flere alternativer</p>
+          <div class="grid-2">
+            <label class="checkbox-line"><input type="checkbox" name="service[]" value="Generelt vedlikehold"> Generelt vedlikehold</label>
+            <label class="checkbox-line"><input type="checkbox" name="service[]" value="Reparasjon"> Reparasjon</label>
+            <label class="checkbox-line"><input type="checkbox" name="service[]" value="Justering"> Justering</label>
+            <label class="checkbox-line"><input type="checkbox" name="service[]" value="Bytte av deler"> Bytte av deler</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA: TODAS LAS 8 SECCIONES -->
+      <div>
+        <!-- 1. Elsykkel / Elektrisk system -->
+        <div class="section">
+          <h2><span class="num-badge">1</span>Elsykkel / Elektrisk system</h2>
+          <p style="font-size: 7.5px;">Motor, batteri, display, sensorer</p>
+          <div class="grid-2">
+            <label class="checkbox-line"><input type="checkbox" name="problema_elsykkel[]" value="Motor fungerer ikke"> Motor fungerer ikke</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_elsykkel[]" value="Ujevn assistanse"> Ujevn / rykkete assistanse</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_elsykkel[]" value="Batteriet lades ikke"> Batteriet lades ikke</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_elsykkel[]" value="Kort rekkevidde"> Kort rekkevidde</label>
+          </div>
+          <label class="checkbox-line"><input type="checkbox" name="problema_elsykkel[]" value="Display fungerer ikke"> Display / skjerm fungerer ikke</label>
+          <label class="checkbox-line"><input type="checkbox" name="problema_elsykkel[]" value="Feilmelding"> Feilmelding på display</label>
+          <label class="checkbox-line"><input type="checkbox" name="problema_elsykkel[]" value="Annet"> Annet elektrisk problem</label>
+        </div>
+
+        <!-- 2. Hjul og dekk -->
+        <div class="section">
+          <h2><span class="num-badge">2</span>Hjul og dekk</h2>
+          <p style="font-size: 7.5px;">Dekk, felg, eiker, ventil</p>
+          <div class="grid-2">
+            <label class="checkbox-line"><input type="checkbox" name="problema_hjul[]" value="Dekkene er flate"> Dekkene er flate ofte</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_hjul[]" value="Punktering"> Punktering</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_hjul[]" value="Slitte dekk"> Slitte dekk</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_hjul[]" value="Hjul ute av sentrum"> Hjul ute av sentrum / slingrer</label>
+          </div>
+          <label class="checkbox-line"><input type="checkbox" name="problema_hjul[]" value="Ødelagte eiker"> Ødelagte / løse eiker</label>
+          <label class="checkbox-line"><input type="checkbox" name="problema_hjul[]" value="Annet"> Annet på hjul/dekk</label>
+        </div>
+
+        <!-- 3. Bremser -->
+        <div class="section">
+          <h2><span class="num-badge">3</span>Bremser</h2>
+          <p style="font-size: 7.5px;">Skivebremser, klosser, kabler</p>
+          <div class="grid-2">
+            <label class="checkbox-line"><input type="checkbox" name="problema_bremser[]" value="Lite effektive bremser"> Lite effektive bremser</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_bremser[]" value="Støyende bremser"> Støyende bremser</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_bremser[]" value="Løs bremsehendel"> Løs bremsehendel</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_bremser[]" value="Slitte bremseklosser"> Slitte bremseklosser</label>
+          </div>
+          <label class="checkbox-line"><input type="checkbox" name="problema_bremser[]" value="Skadet bremsekabel"> Skadet bremsekabel / slange</label>
+          <label class="checkbox-line"><input type="checkbox" name="problema_bremser[]" value="Annet"> Annet på bremser</label>
+        </div>
+
+        <!-- 4. Drivverk -->
+        <div class="section">
+          <h2><span class="num-badge">4</span>Drivverk (gir)</h2>
+          <p style="font-size: 7.5px;">Kjede, drev, krank, kassett</p>
+          <div class="grid-2">
+            <label class="checkbox-line"><input type="checkbox" name="problema_drivverk[]" value="Vanskelig å skifte gir"> Vanskelig å skifte gir</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_drivverk[]" value="Kjeden hopper"> Kjeden hopper av</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_drivverk[]" value="Kjeden er løs"> Kjeden er løs / slarkete</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_drivverk[]" value="Slitte drev"> Slitte drev eller kjedehjul</label>
+          </div>
+          <label class="checkbox-line"><input type="checkbox" name="problema_drivverk[]" value="Gir fungerer ikke"> Gir fungerer ikke riktig</label>
+          <label class="checkbox-line"><input type="checkbox" name="problema_drivverk[]" value="Annet"> Annet på drivverk</label>
+        </div>
+
+        <!-- 5. Pedaler og krank -->
+        <div class="section">
+          <h2><span class="num-badge">5</span>Pedaler og krank</h2>
+          <p style="font-size: 7.5px;">Pedaler, krankarmer, pedalaksling</p>
+          <div class="grid-2">
+            <label class="checkbox-line"><input type="checkbox" name="problema_pedaler[]" value="Løse pedaler"> Løse pedaler</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_pedaler[]" value="Lyder fra pedalene"> Knakker / lyder når du tråkker</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_pedaler[]" value="Problemer med krankarmen"> Problemer med krankarmen</label>
+          </div>
+          <label class="checkbox-line"><input type="checkbox" name="problema_pedaler[]" value="Annet"> Annet på pedaler/krank</label>
+        </div>
+
+        <!-- 6. Styre og styring -->
+        <div class="section">
+          <h2><span class="num-badge">6</span>Styre og styring</h2>
+          <p style="font-size: 7.5px;">Styret, styrelager, stem</p>
+          <div class="grid-2">
+            <label class="checkbox-line"><input type="checkbox" name="problema_styring[]" value="Løst styre"> Løst styre</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_styring[]" value="Vanskelig å styre"> Vanskelig å styre / treg styring</label>
+          </div>
+          <label class="checkbox-line"><input type="checkbox" name="problema_styring[]" value="Ustabil styring"> Ustabil følelse i fronten</label>
+          <label class="checkbox-line"><input type="checkbox" name="problema_styring[]" value="Annet"> Annet på styre/styring</label>
+        </div>
+
+        <!-- 7. Sete og setepinne -->
+        <div class="section">
+          <h2><span class="num-badge">7</span>Sete og setepinne</h2>
+          <p style="font-size: 7.5px;">Sadel, setepinne, klemme</p>
+          <div class="grid-2">
+            <label class="checkbox-line"><input type="checkbox" name="problema_sete[]" value="Ubehagelig sete"> Ubehagelig sete</label>
+            <label class="checkbox-line"><input type="checkbox" name="problema_sete[]" value="Skjevt sete"> Setet står skjevt</label>
+          </div>
+          <label class="checkbox-line"><input type="checkbox" name="problema_sete[]" value="Løs setepinne"> Løs setepinne / siger ned</label>
+          <label class="checkbox-line"><input type="checkbox" name="problema_sete[]" value="Annet"> Annet på sete/setepinne</label>
+        </div>
+
+        <!-- 8. Andre problemer -->
+        <div class="section">
+          <h2><span class="num-badge">8</span>Andre problemer</h2>
+          <p style="font-size: 7.5px;">Lyder, følelser i rammen, demper osv.</p>
+          <textarea name="andre_problemer" placeholder=""></textarea>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-size: 7.5px; margin-top: 8px; color: #666;">
+      Vi kontakter deg med prisoverslag før større reparasjoner.
+    </p>
+  </form>
+</body>
+</html>

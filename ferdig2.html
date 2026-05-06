@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <title>Sykkelverksted - Service Rapport</title>
+  <style>
+    @page { margin: 8mm; size: A4; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: Arial, sans-serif; 
+      font-size: 10px; 
+      line-height: 1.3; 
+      color: #333; 
+      max-width: 210mm; 
+      margin: 0 auto; 
+      padding: 8mm; 
+      background: white;
+    }
+    .header { 
+      border-bottom: 4px solid #0284c7; 
+      padding-bottom: 8px; 
+      margin-bottom: 12px; 
+      text-align: center;
+    }
+    .header h1 { 
+      font-size: 20px; 
+      font-weight: bold; 
+      color: #0284c7; 
+      margin-bottom: 4px; 
+    }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .info-box { 
+      border: 2px solid #0284c7; 
+      padding: 8px; 
+      border-radius: 8px; 
+      background: #e3f2fd;
+    }
+    .info-label { font-weight: bold; color: #0284c7; font-size: 9px; }
+    .info-value { font-size: 11px; margin-top: 2px; }
+    .section { 
+      border: 1px solid #ddd; 
+      border-radius: 6px; 
+      padding: 8px; 
+      margin-bottom: 8px; 
+      background: #f9f9f9; 
+    }
+    .section h2 { 
+      font-size: 12px; 
+      font-weight: bold; 
+      margin-bottom: 6px; 
+      color: #0284c7; 
+      padding-bottom: 4px;
+      border-bottom: 2px solid #e3f2fd;
+    }
+    .work-item { 
+      display: flex; 
+      align-items: flex-start; 
+      gap: 8px; 
+      margin-bottom: 4px; 
+      font-size: 10px; 
+    }
+    .status-ok { color: #10b981; font-weight: bold; }
+    .status-repaired { color: #0284c7; font-weight: bold; }
+    .status-replaced { color: #f59e0b; font-weight: bold; }
+    .status-adjusted { color: #8b5cf6; font-weight: bold; }
+    .checkbox-checked { 
+      width: 14px; height: 14px; 
+      border: 2px solid #10b981; 
+      border-radius: 3px; 
+      background: #10b981; 
+      margin-right: 6px;
+      position: relative;
+    }
+    .checkbox-checked::after {
+      content: '✓';
+      position: absolute;
+      top: -2px; left: 2px;
+      color: white; font-size: 10px; font-weight: bold;
+    }
+    .total-section {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+    .total-section h2 { color: white; border-bottom: 2px solid rgba(255,255,255,0.3); }
+    .signature { 
+      margin-top: 20px; 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 20px; 
+      border-top: 2px dashed #ddd; 
+      padding-top: 12px;
+    }
+    .signature-line { 
+      border-bottom: 1px solid #999; 
+      padding-top: 40px; 
+      text-align: center; 
+      font-size: 11px;
+    }
+    @media print { body { -webkit-print-color-adjust: exact; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div style="background: white; color: #0284c7; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 11px; display: inline-block; border: 2px solid #0284c7;">
+      SERVICE RAPPORT · Sykkelverksted
+    </div>
+    <h1>Service- og Reparasjonsrapport</h1>
+    <p style="font-size: 11px;">Her er oversikt over arbeidet som er utført på din sykkel</p>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-box">
+      <div class="info-label">Kunde</div>
+      <div class="info-value" id="kunde">Ola Nordmann</div>
+      <div class="info-label">Dato inn / ut</div>
+      <div class="info-value" id="dato">18.12.2025 / 19.12.2025</div>
+    </div>
+    <div class="info-box">
+      <div class="info-label">Sykkel</div>
+      <div class="info-value" id="sykkel">Giant Talon 3 (2022) - El-sykkel</div>
+      <div class="info-label">Kilometer / Timer</div>
+      <div class="info-value" id="km">1 250 km / 45 timer</div>
+    </div>
+  </div>
+
+  <div class="grid-main" style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 12px;">
+    <!-- TRABAJO REALIZADO -->
+    <div>
+      <div class="section">
+        <h2>🔧 Utført arbeid - Oversikt</h2>
+        <div class="work-item">
+          <span class="checkbox-checked"></span>
+          <span>Full service og inspeksjon</span>
+        </div>
+        <div class="work-item">
+          <span class="checkbox-checked"></span>
+          <span><span class="status-replaced">BYTTET:</span> Innerslange forhjul</span>
+        </div>
+        <div class="work-item">
+          <span class="checkbox-checked"></span>
+          <span><span class="status-replaced">BYTTET:</span> Krankdrev og kassett</span>
+        </div>
+        <div class="work-item">
+          <span class="checkbox-checked"></span>
+          <span><span class="status-adjusted">JUSTERT:</span> Gir og bremser</span>
+        </div>
+        <div class="work-item">
+          <span class="checkbox-checked"></span>
+          <span><span class="status-ok">OK:</span> Motor, batteri, dekk, ramme</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>⏱️ Arbeidstid</h2>
+        <div style="font-size: 28px; font-weight: bold; color: #0284c7; text-align: center; margin-bottom: 4px;">2,5 timer</div>
+        <p style="text-align: center; color: #666;">Total arbeidstid</p>
+      </div>
+    </div>
+
+    <!-- DETALLES POR SECCIÓN -->
+    <div>
+      <div class="section">
+        <h2><span style="background: #10b981; color: white; padding: 2px 6px; border-radius: 12px; font-size: 10px;">1</span> Elsykkel / Elektrisk</h2>
+        <div class="work-item">
+          <span class="checkbox-checked"></span>
+          <span><span class="status-ok">INSPEKSJON OK:</span> Motor, batteri, display, sensorer</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span style="background: #f59e0b; color: white; padding: 2px 6px; border-radius: 12px; font-size: 10px;">2</span> Hjul og dekk</h2>
+        <div class="work-item">
+          <span class="checkbox-checked"></span>
+          <span><span class="status-replaced">BYTTET:</span> Innerslange forhjul + lufttrykk justert</span>
+        </div>
+        <div class="work-item">
+          <span class="checkbox-checked"></span>
+          <span><span class="status-ok">OK:</span> Bakdekk, eiker, felg</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span style="background: #0284c7; color: white; padding: 2px 6px; border-radius: 12px; font-size: 10px;">4</span> Drivverk (gir)</h2>
+        <div class="work-item">
+          <span class="checkbox-checked"></span>
+          <span><span class="status-replaced">BYTTET:</span> Krankdrev og kassett (kjedet glapp)</span>
+        </div>
+        <div class="work-item">
+          <span class="checkbox-checked"></span>
+          <span><span class="status-adjusted">KJEDEN:</span> Renset, smurt og justert</span>
+        </div>
+        <div class="work-item">
+          <span class="status-ok" style="color: #10b981;">✓ Girskiftere justert og fungerer perfekt</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span style="background: #8b5cf6; color: white; padding: 2px 6px; border-radius: 12px; font-size: 10px;">3+5-7</span> Bremser, pedaler, styre, sete</h2>
+        <div class="work-item">
+          <span class="checkbox-checked"></span>
+          <span><span class="status-adjusted">JUSTERT:</span> Bremser og girskiftere</span>
+        </div>
+        <div class="work-item">
+          <span class="checkbox-checked"></span>
+          <span><span class="status-ok">OK:</span> Pedaler, krank, styre, sete, setepinne</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span style="background: #ef4444; color: white; padding: 2px 6px; border-radius: 12px; font-size: 10px;">8</span> Notater</h2>
+        <div style="font-style: italic; color: #666; font-size: 10px;">
+          Problem: Når motor kobles inn låser krank/krankarmer seg. Årsak: Slitasje på drivverk etter kun kjedebytte. 
+          Løsning: Hele drivverket byttet for å sikre korrekt funksjon.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="total-section">
+    <h2 style="margin-bottom: 8px;">📋 Sykkelen er nå i perfekt stand</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 11px;">
+      <div>
+        <div style="font-weight: bold; margin-bottom: 4px;">Status etter service:</div>
+        <div>✅ Motor og el-system: OK</div>
+        <div>✅ Gir og bremser: Justert</div>
+        <div>✅ Dekk og hjul: OK</div>
+        <div>✅ Drivverk: Komplett byttet</div>
+      </div>
+      <div>
+        <div style="font-weight: bold; margin-bottom: 4px;">Neste service anbefales:</div>
+        <div>2 500 km eller 12 mnd</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="signature">
+    <div>
+      <div class="signature-line" style="grid-column: 1">____________________________</div>
+      <div style="text-align: center; font-size: 9px; margin-top: 4px; color: #666;">Mekaniker signatur</div>
+    </div>
+    <div>
+      <div class="signature-line" style="grid-column: 1">____________________________</div>
+      <div style="text-align: center; font-size: 9px; margin-top: 4px; color: #666;">Kunde signatur / Mottatt OK</div>
+    </div>
+  </div>
+
+</body>
+</html>
