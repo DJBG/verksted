@@ -45,6 +45,8 @@
     .svc-card input{position:absolute;opacity:0;pointer-events:none}
     .svc-title{font-size:.875rem;font-weight:700;color:#0f172a}
     .dark .svc-title{color:#f1f5f9}
+    .svc-price{font-weight:500;font-size:.75rem;color:#64748b;margin-left:6px}
+    .dark .svc-price{color:#94a3b8}
     .svc-text{font-size:.75rem;color:#64748b}
     .dark .svc-text{color:#94a3b8}
     .card {
@@ -346,28 +348,18 @@
           <span class="badge-optional">Valgfritt</span>
         </div>
         <p class="text-xs text-slate-500 dark:text-slate-400">
-          Velg det som passer best. Deler kommer alltid i tillegg.
+          Velg det som passer best. Deler kommer i tillegg.
         </p>
         <div class="grid gap-3 sm:grid-cols-2">
           <label class="svc-card">
-            <input type="radio" name="service_valg" value="Enkel service" class="sr-only">
-            <span class="svc-title">Enkel service</span>
-            <span class="svc-text">Justering av gir og bremser, smøring av kjede, kontroll av dekktrykk og bolter.</span>
+            <input type="radio" name="service_valg" value="Enkel service (VA80)" class="sr-only">
+            <span class="svc-title">Generell service <span class="svc-price">790 kr</span></span>
+            <span class="svc-text">Girjustering, bremsejustering, skruesjekk og oppsmøring av kjede.</span>
           </label>
           <label class="svc-card">
-            <input type="radio" name="service_valg" value="Generell service" class="sr-only">
-            <span class="svc-title">Generell service</span>
-            <span class="svc-text">Grundig gjennomgang av hele sykkelen: gir, bremser, hjul, drivverk og lager. Vi gir beskjed før vi bytter deler.</span>
-          </label>
-          <label class="svc-card">
-            <input type="radio" name="service_valg" value="Reparasjon / enkeltjobb" class="sr-only">
-            <span class="svc-title">Reparasjon / enkeltjobb</span>
-            <span class="svc-text">Noe er ødelagt, eller du trenger én bestemt jobb. Beskriv det nedenfor.</span>
-          </label>
-          <label class="svc-card">
-            <input type="radio" name="service_valg" value="Usikker – sjekk sykkelen" class="sr-only">
-            <span class="svc-title">Usikker – sjekk sykkelen</span>
-            <span class="svc-text">Vi ser over sykkelen og tar kontakt med deg før vi gjør noe.</span>
+            <input type="radio" name="service_valg" value="Kun reparasjon" class="sr-only">
+            <span class="svc-title">Kun reparasjon</span>
+            <span class="svc-text">Ingen service – bare det jeg beskriver nedenfor.</span>
           </label>
         </div>
       </section>
