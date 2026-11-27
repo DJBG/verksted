@@ -57,6 +57,7 @@ h1{font-size:clamp(30px,4vw,42px);line-height:1.05;margin:0 0 6px;font-weight:70
 .ic.on{color:var(--acc)}
 .empty{color:var(--mute);font-size:14px;margin:4px 0}
 .free{display:flex;gap:8px}
+.mlabel{font-size:14px;margin:0 0 6px}.kjrow{margin-bottom:8px}.kjrow .chip{min-height:40px;padding:7px 12px;font:14px 'DM Mono',ui-monospace,monospace}.chip.sel{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .meas{margin-bottom:8px;align-items:center}.unit{color:var(--mute);font-size:14px;width:22px}
 .free input{flex:1;font-size:16px;padding:9px 12px;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
 .why .chip{font-size:14px;min-height:40px;padding:7px 11px}
@@ -95,7 +96,9 @@ h1{font-size:clamp(30px,4vw,42px);line-height:1.05;margin:0 0 6px;font-weight:70
       <div class="pre" id="pre"></div>
       <div class="sec"><h3>Rediger linjer</h3><ul class="rows" id="rows"></ul></div>
       <div class="sec"><h3>Målinger</h3>
-        <form class="free meas" id="kjForm"><input id="kj" inputmode="decimal" placeholder="Kjedestrekk, f.eks. 0,5" aria-label="Kjedestrekk i prosent"><span class="unit">%</span><button class="btn" type="submit">Legg til</button></form>
+        <p class="mlabel">Kjedestrekk (Unior)</p>
+        <div class="chips kjrow" id="kjVals"></div>
+        <div class="chips kjrow" id="kjMods"></div>
         <form class="free meas" id="kmForm"><input id="km" inputmode="numeric" placeholder="Km-stand (elsykkel)" aria-label="Km-stand"><span class="unit">km</span><button class="btn" type="submit">Legg til</button></form>
       </div>
       <div class="sec"><h3>Egen tekst</h3>
@@ -176,12 +179,20 @@ function renderRows(){const ul=$('rows');ul.innerHTML='';if(!lines.length){ul.ap
    mk('×','Slett linje',()=>{undoState=[...lines];lines.splice(i,1);save();render();toast('Linje slettet',true)}));
   ul.appendChild(li)});
  const n=lines.length+(lines.length===1?' linje':' linjer');$('count').textContent=n;$('count2').textContent=n}
-function render(){renderPre();renderRows();renderTabs();renderGroups()}
+function render(){renderPre();renderRows();renderTabs();renderGroups();if(window.kjSync)kjSync()}
 function add(p){if(lines.includes(p)){undoState=[...lines];lines=lines.filter(l=>l!==p);toast('Fjernet',true)}else lines.push(p);save();render()}
 async function copy(){if(!lines.length)return toast('Ingenting å kopiere ennå');try{await navigator.clipboard.writeText(text());toast('Kopiert – lim inn under Intern info')}catch(e){const r=document.createRange();r.selectNodeContents($('pre'));const s=getSelection();s.removeAllRanges();s.addRange(r);toast('Merket – trykk Ctrl+C')}}
 $('freeForm').addEventListener('submit',e=>{e.preventDefault();let v=$('free').value.trim();if(!v)return;if(!/[.!?)]$/.test(v))v+='.';v=v[0].toUpperCase()+v.slice(1);lines.push(v);$('free').value='';save();render()});
 function setMeasure(prefix,line){const i=lines.findIndex(l=>l.startsWith(prefix));if(i>=0)lines[i]=line;else lines.push(line);save();render()}
-$('kjForm').addEventListener('submit',e=>{e.preventDefault();const v=$('kj').value.trim().replace('.',',');if(!/^\d+(,\d+)?$/.test(v))return toast('Skriv bare tallet, f.eks. 0,5');setMeasure('Kjedestrekk:','Kjedestrekk: '+v+' %.');$('kj').value=''});
+const KJ=['0,25','0,50','0,75','0,80','0,90','1,0'];let kj={v:null,plus:0,over:false};
+function kjLine(){return 'Kjedestrekk: '+(kj.over?'Over ':'')+kj.v+'+'.repeat(kj.plus)+' Unior.'}
+function renderKj(){const a=$('kjVals');a.innerHTML='';for(const v of KJ){const b=el('button','chip'+(kj.v===v?' sel':''),v);b.type='button';b.setAttribute('aria-pressed',kj.v===v);b.onclick=()=>{kj.v=kj.v===v?null:v;applyKj()};a.appendChild(b)}
+ const m=$('kjMods');m.innerHTML='';['','+','++','+++'].forEach((p,i)=>{const b=el('button','chip'+(kj.plus===i?' sel':''),p||'Ingen +');b.type='button';b.setAttribute('aria-pressed',kj.plus===i);b.onclick=()=>{kj.plus=i;applyKj()};m.appendChild(b)});
+ const o=el('button','chip'+(kj.over?' sel':''),'Over');o.type='button';o.setAttribute('aria-pressed',kj.over);o.onclick=()=>{kj.over=!kj.over;applyKj()};m.appendChild(o)}
+function applyKj(){if(kj.v)setMeasure('Kjedestrekk:',kjLine());else{const i=lines.findIndex(l=>l.startsWith('Kjedestrekk:'));if(i>=0){lines.splice(i,1);save();render()}}renderKj()}
+{const ex=lines.find(l=>l.startsWith('Kjedestrekk:'));if(ex){const mm=ex.match(/^Kjedestrekk: (Over )?([\d,]+)(\+*) Unior\.$/);if(mm&&KJ.includes(mm[2]))kj={v:mm[2],plus:mm[3].length,over:!!mm[1]}}}
+window.kjSync=()=>{if(kj.v&&!lines.some(l=>l.startsWith('Kjedestrekk:'))){kj={v:null,plus:0,over:false};renderKj()}};
+renderKj();
 $('kmForm').addEventListener('submit',e=>{e.preventDefault();const v=$('km').value.replace(/\s/g,'');if(!/^\d+$/.test(v))return toast('Skriv bare tallet, f.eks. 1250');setMeasure('Km-stand:','Km-stand: '+v.replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' km.');$('km').value=''});
 $('copy').onclick=copy;$('copy2').onclick=copy;
 $('clear').onclick=()=>{if(!lines.length)return;undoState=[...lines];lines=[];save();render();toast('Notatet er tømt',true)};
