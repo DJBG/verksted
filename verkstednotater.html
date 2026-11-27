@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verkstednotater</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* VOICE: rask verktøy for en mekaniker, rolig og tydelig, ingen pynt
+   IDEA: arbeidsseddelen på benken: delekatalog til venstre, notatlappen til høyre
+   PICTURE: selve notatet, slik det ser ut i Intern info, alltid synlig
+   COLOUR and TYPE: hvit / nesten svart, verkstedsrød aksent; DM Sans + DM Mono som i verksted-repoet
+   LAYOUT: to kolonner over 900px, stablet med fast kopieringslinje nederst på mobil */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#121214);--ink:light-dark(#16161a,#ececef);--mute:light-dark(#686872,#9a9aa4);--line:light-dark(#e3e3e8,#2a2a30);--chip:light-dark(#f3f3f6,#1d1d22);--paper:light-dark(#fafafa,#18181c);--acc:#c8102e;--acc-ink:#fff;--ok:light-dark(#0f7a3e,#4cc283)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 'DM Sans',system-ui,sans-serif;overflow-x:clip}
+button,input{font:inherit;color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:clamp(20px,3vw,40px) max(4vw,16px) 110px}
+h1{font-size:clamp(30px,4vw,44px);line-height:1.05;margin:0 0 6px;font-weight:700;letter-spacing:-.01em}
+.sub{color:var(--mute);margin:0 0 24px;max-width:60ch}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:32px;align-items:start}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid var(--line);scrollbar-width:thin}
+.tab{flex:none;border:0;background:none;padding:10px 12px;min-height:44px;border-radius:8px;cursor:pointer;color:var(--mute);font-weight:500}
+.tab[aria-selected=true]{background:var(--ink);color:var(--bg)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--chip);padding:10px 14px;min-height:44px;border-radius:10px;cursor:pointer;text-align:left;line-height:1.3}
+.chip:hover{border-color:var(--ink)}
+.chip.used{border-color:var(--ok);color:var(--ok)}
+.chip.mine{border-style:dashed}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.h2{font-size:17px;font-weight:600;margin:24px 0 10px}
+.free{display:flex;gap:8px;margin-top:8px}
+.free input{flex:1;font-size:16px;padding:10px 12px;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.btn{border:0;border-radius:10px;padding:10px 16px;min-height:44px;cursor:pointer;font-weight:600;background:var(--chip);border:1px solid var(--line)}
+.btn.pri{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.hint{font-size:13px;color:var(--mute);margin:8px 0 0}
+.note{position:sticky;top:16px;border:1px solid var(--line);border-radius:14px;background:var(--paper);overflow:hidden}
+.note header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.note header b{font-size:13px;color:var(--mute);font-weight:500}
+.pre{font:14px/1.7 'DM Mono',ui-monospace,monospace;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;min-height:160px}
+.pre .dim{color:var(--mute)}
+.rows{list-style:none;margin:0;padding:0 8px 8px}
+.row{display:flex;align-items:center;gap:4px;padding:2px 0}
+.row input{flex:1;font:14px 'DM Mono',ui-monospace,monospace;border:1px solid transparent;background:none;padding:8px;border-radius:8px;min-height:40px}
+.row input:hover,.row input:focus{border-color:var(--line);background:var(--bg)}
+.ic{border:0;background:none;width:36px;height:40px;border-radius:8px;cursor:pointer;color:var(--mute);font-size:16px;flex:none}
+.ic:hover{background:var(--chip);color:var(--ink)}
+.empty{color:var(--mute);padding:8px 16px 16px;font-size:14px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;border-top:1px solid var(--line);align-items:center}
+.acts label{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--mute);margin-right:auto;min-height:44px;cursor:pointer}
+.acts input[type=checkbox]{width:18px;height:18px;accent-color:var(--acc)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;display:flex;gap:12px;align-items:center}
+.toast.on{opacity:1;pointer-events:auto}
+.toast button{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font-weight:600}
+.bar{display:none}
+@media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}.note{position:static}
+ .bar{display:flex;position:fixed;left:0;right:0;bottom:0;gap:10px;align-items:center;padding:12px max(4vw,16px);background:var(--bg);border-top:1px solid var(--line);z-index:5}
+ .bar span{margin-right:auto;color:var(--mute);font-size:14px}}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Verkstednotater</h1>
+  <p class="sub">Trykk på det du har gjort. Notatet bygges i riktig format og kan limes rett inn under Intern info.</p>
+  <div class="grid">
+    <section aria-label="Velg arbeid">
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div class="chips" id="chips"></div>
+      <p class="h2">Legg til årsak på siste linje</p>
+      <div class="chips" id="why"></div>
+      <p class="h2">Egen tekst</p>
+      <form class="free" id="freeForm">
+        <input id="free" placeholder="f.eks. Byttet bakkaliper med slange" autocomplete="off" aria-label="Egen tekst">
+        <button class="btn" type="submit">Legg til</button>
+      </form>
+      <p class="hint">Stjerne på en linje i notatet lagrer den under «Mine fraser».</p>
+    </section>
+    <aside class="note" aria-label="Notat">
+      <header><span style="font-weight:600">Intern info</span><b id="count">0 linjer</b></header>
+      <div class="pre" id="pre"></div>
+      <ul class="rows" id="rows"></ul>
+      <div class="acts">
+        <label><input type="checkbox" id="sep" checked> Skillelinje</label>
+        <button class="btn" id="clear" type="button">Tøm</button>
+        <button class="btn pri" id="copy" type="button">Kopier</button>
+      </div>
+    </aside>
+  </div>
+</div>
+<div class="bar"><span id="count2">0 linjer</span><button class="btn pri" id="copy2" type="button">Kopier notat</button></div>
+<div class="toast" id="toast" role="status"><span id="tmsg"></span><button id="undo" type="button" hidden>Angre</button></div>
+<script>
+{
+const CATS={
+ 'Service':['Enkel service.','Full service.','Generell sjekk – alt ok.','Vasket og smurt sykkelen.','Prøvekjørt – alt fungerer som det skal.','Strammet alle bolter til riktig moment.'],
+ 'Bremser':['Nye bremseklosser foran.','Nye bremseklosser bak.','Nye bremseklosser foran og bak.','Luftet bremsene foran og bak.','Justert bremsene.','Byttet bremseslange bak.','Byttet bakkaliper med slange.','Rettet bremseskiven.','Byttet bremseskive.'],
+ 'Drivverk':['Byttet kjede.','Byttet kassett.','Byttet kjede og kassett.','Byttet krankdrev.','Byttet kjedekasse.','Justert girene.','Byttet girwire og strømpe.','Rettet girhengeren.','Byttet bakgir.','Renset og smurt drivverket.'],
+ 'Hjul og dekk':['Skiftet til vinterdekk.','Skiftet til sommerdekk.','Byttet slange foran.','Byttet slange bak.','Byttet dekk foran.','Byttet dekk bak.','Rettet hjulet.','Strammet eiker.','Pumpet dekkene til riktig trykk.'],
+ 'Elsykkel':['Systemet er oppdatert.','Lest av feilkoder – ingen feil.','Kontrollert batteri og lader.','Batteriet var i dvale – vekket og ladet.','Byttet hastighetssensor.','Kontrollert kontakter og ledninger.'],
+ 'Krank og pedal':['Byttet pedaler.','Strammet krankarmene.','Byttet krankboks.','Smurt pedalgjengene.'],
+ 'Styre':['Justert styrelageret.','Byttet styrelager.','Byttet håndtak.','Strammet stem.'],
+ 'Sete':['Setepinnen er justert (setet var løst).','Byttet sete.','Smurt setepinnen.'],
+ 'Annet':['Skrue til støtte ble byttet (Loctite).','Montert skjermer.','Montert bagasjebrett.','Montert ringeklokke.','Byttet lys.','Montert støtte.']
+};
+const WHY=['fordi det gamle var slitt.','fordi det gamle var skadet.','fordi den var korrodert.','etter kundens ønske.','– anbefales byttet ved neste service.'];
+const SEP='-------------------------';
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let lines=store.get('vn-lines',[]),mine=store.get('vn-mine',[]),cat=store.get('vn-cat','Service'),useSep=store.get('vn-sep',true),undoState=null,tt;
+const tabsList=()=>mine.length?[...Object.keys(CATS),'Mine fraser']:Object.keys(CATS);
+if(!tabsList().includes(cat))cat='Service';
+const save=()=>{store.set('vn-lines',lines);store.set('vn-mine',mine);store.set('vn-cat',cat);store.set('vn-sep',useSep)};
+const text=()=>lines.length?(useSep?SEP+'\n':'')+'Verkstednotater\n'+lines.map(l=>'- '+l).join('\n'):'';
+function toast(msg,undo){$('tmsg').textContent=msg;$('undo').hidden=!undo;$('toast').classList.add('on');clearTimeout(tt);tt=setTimeout(()=>$('toast').classList.remove('on'),undo?5000:1800)}
+function renderTabs(){const t=$('tabs');t.innerHTML='';for(const name of tabsList()){const b=document.createElement('button');b.className='tab';b.type='button';b.role='tab';b.textContent=name;b.setAttribute('aria-selected',name===cat);b.onclick=()=>{cat=name;save();renderTabs();renderChips()};t.appendChild(b)}}
+function renderChips(){const c=$('chips');c.innerHTML='';const list=cat==='Mine fraser'?mine:CATS[cat];for(const p of list){const b=document.createElement('button');b.type='button';b.className='chip'+(lines.includes(p)?' used':'')+(cat==='Mine fraser'?' mine':'');b.textContent=p;b.onclick=()=>add(p);c.appendChild(b)}}
+function renderWhy(){const c=$('why');c.innerHTML='';for(const w of WHY){const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=w;b.onclick=()=>{if(!lines.length)return toast('Legg til en linje først');const i=lines.length-1;lines[i]=lines[i].replace(/\.$/,'')+' '+w;save();render()};c.appendChild(b)}}
+function renderNote(){
+ const pre=$('pre');pre.innerHTML='';
+ if(!lines.length){const s=document.createElement('span');s.className='dim';s.textContent='Notatet vises her.';pre.appendChild(s)}
+ else{if(useSep){const s=document.createElement('span');s.className='dim';s.textContent=SEP+'\n';pre.appendChild(s)}pre.appendChild(document.createTextNode('Verkstednotater\n'+lines.map(l=>'- '+l).join('\n')))}
+ const ul=$('rows');ul.innerHTML='';
+ lines.forEach((l,i)=>{const li=document.createElement('li');li.className='row';
+  const inp=document.createElement('input');inp.value=l;inp.setAttribute('aria-label','Linje '+(i+1));inp.oninput=()=>{lines[i]=inp.value;save();renderPreOnly()};
+  const mk=(sym,label,fn)=>{const b=document.createElement('button');b.type='button';b.className='ic';b.textContent=sym;b.title=label;b.setAttribute('aria-label',label);b.onclick=fn;return b};
+  li.append(inp,mk('↑','Flytt opp',()=>{if(i>0){[lines[i-1],lines[i]]=[lines[i],lines[i-1]];save();render()}}),mk(mine.includes(l)?'★':'☆','Lagre i Mine fraser',()=>{const v=lines[i].trim();if(!v)return;if(mine.includes(v)){mine=mine.filter(m=>m!==v);toast('Fjernet fra Mine fraser')}else{mine.push(v);toast('Lagret i Mine fraser')}if(!tabsList().includes(cat))cat='Service';save();render();renderTabs()}),mk('×','Slett linje',()=>{undoState=[...lines];lines.splice(i,1);save();render();toast('Linje slettet',true)}));
+  ul.appendChild(li)});
+ const n=lines.length+(lines.length===1?' linje':' linjer');$('count').textContent=n;$('count2').textContent=n;
+}
+function renderPreOnly(){const pre=$('pre');pre.textContent='';if(useSep){const s=document.createElement('span');s.className='dim';s.textContent=SEP+'\n';pre.appendChild(s)}pre.appendChild(document.createTextNode('Verkstednotater\n'+lines.map(l=>'- '+l).join('\n')))}
+function render(){renderNote();renderChips()}
+function add(p){p=p.trim();if(!p)return;if(lines.includes(p)){undoState=[...lines];lines=lines.filter(l=>l!==p);toast('Fjernet',true)}else lines.push(p);save();render()}
+async function copy(){if(!lines.length)return toast('Ingenting å kopiere ennå');try{await navigator.clipboard.writeText(text());toast('Kopiert – lim inn under Intern info')}catch(e){const r=document.createRange();r.selectNodeContents($('pre'));const s=getSelection();s.removeAllRanges();s.addRange(r);toast('Merket – trykk Ctrl+C')}}
+$('freeForm').addEventListener('submit',e=>{e.preventDefault();let v=$('free').value.trim();if(!v)return;if(!/[.!?)]$/.test(v))v+='.';v=v[0].toUpperCase()+v.slice(1);lines.push(v);$('free').value='';save();render()});
+$('copy').onclick=copy;$('copy2').onclick=copy;
+$('clear').onclick=()=>{if(!lines.length)return;undoState=[...lines];lines=[];save();render();toast('Notatet er tømt',true)};
+$('undo').onclick=()=>{if(undoState){lines=undoState;undoState=null;save();render();$('toast').classList.remove('on')}};
+$('sep').checked=useSep;$('sep').onchange=e=>{useSep=e.target.checked;save();renderNote()};
+renderTabs();renderWhy();render();
+}
+</script>
+</body>
+</html>
