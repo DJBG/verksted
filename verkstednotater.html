@@ -57,6 +57,7 @@ h1{font-size:clamp(30px,4vw,42px);line-height:1.05;margin:0 0 6px;font-weight:70
 .ic.on{color:var(--acc)}
 .empty{color:var(--mute);font-size:14px;margin:4px 0}
 .free{display:flex;gap:8px}
+.meas{margin-bottom:8px;align-items:center}.unit{color:var(--mute);font-size:14px;width:22px}
 .free input{flex:1;font-size:16px;padding:9px 12px;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
 .why .chip{font-size:14px;min-height:40px;padding:7px 11px}
 .btn{border-radius:10px;padding:10px 16px;min-height:44px;cursor:pointer;font-weight:600;background:var(--chip);border:1px solid var(--line)}
@@ -93,6 +94,10 @@ h1{font-size:clamp(30px,4vw,42px);line-height:1.05;margin:0 0 6px;font-weight:70
       <header><span>Intern info</span><b id="count">0 linjer</b></header>
       <div class="pre" id="pre"></div>
       <div class="sec"><h3>Rediger linjer</h3><ul class="rows" id="rows"></ul></div>
+      <div class="sec"><h3>Målinger</h3>
+        <form class="free meas" id="kjForm"><input id="kj" inputmode="decimal" placeholder="Kjedestrekk, f.eks. 0,5" aria-label="Kjedestrekk i prosent"><span class="unit">%</span><button class="btn" type="submit">Legg til</button></form>
+        <form class="free meas" id="kmForm"><input id="km" inputmode="numeric" placeholder="Km-stand (elsykkel)" aria-label="Km-stand"><span class="unit">km</span><button class="btn" type="submit">Legg til</button></form>
+      </div>
       <div class="sec"><h3>Egen tekst</h3>
         <form class="free" id="freeForm"><input id="free" placeholder="Skriv og trykk Enter" autocomplete="off" aria-label="Egen tekst"><button class="btn" type="submit">Legg til</button></form>
       </div>
@@ -110,26 +115,34 @@ h1{font-size:clamp(30px,4vw,42px);line-height:1.05;margin:0 0 6px;font-weight:70
 <script>
 {
 const CATS={
- 'Service':{'Generelt':['Enkel service.','Full service.','Generell sjekk – alt ok.','Vasket og smurt sykkelen.','Strammet alle bolter til riktig moment.','Prøvekjørt – alt fungerer som det skal.']},
+ 'Service':{'Generelt':['Enkel service.','Full service.','Førstegangsservice.','Generell sjekk – alt ok.','Vasket og smurt sykkelen.','Strammet alle bolter til riktig moment.','Prøvekjørt – alt fungerer som det skal.']},
  'Bremser':{
   'Foran':['Nye bremseklosser foran.','Luftet bremsen foran.','Justert bremsen foran.','Byttet bremseslange foran.','Byttet kaliper foran med slange.','Rettet bremseskiven foran.','Byttet bremseskive foran.'],
   'Bak':['Nye bremseklosser bak.','Luftet bremsen bak.','Justert bremsen bak.','Byttet bremseslange bak.','Byttet kaliper bak med slange.','Rettet bremseskiven bak.','Byttet bremseskive bak.'],
   'Foran og bak':['Nye bremseklosser foran og bak.','Luftet bremsene foran og bak.','Justert bremsene foran og bak.','Byttet bremseskiver foran og bak.']},
  'Drivverk':{
-  'Komplett':['Byttet hele drivverket (kjede, kassett, krankhjul og trinsehjul).'],
+  'Komplett':['Byttet hele drivverket (kjede, kassett, krankhjul og trinsehjul).','Rengjort hele drivverket.'],
   'Kjede og kassett':['Byttet kjede.','Byttet kassett.','Byttet kjede og kassett.','Renset og smurt drivverket.'],
-  'Gir':['Justert girene.','Byttet bakgir.','Byttet girwire og strømpe.','Rettet girhengeren.','Byttet girhenger.'],
+  'Gir':['Justert girene.','Byttet bakgir.','Byttet girwire og strømpe.','Rettet girhengeren.','Byttet girhenger.','Byttet trinsehjul.'],
   'Krank':['Byttet krankdrev.','Byttet kjedekasse.']},
  'Hjul og dekk':{
   'Foran':['Byttet slange foran.','Byttet dekk foran.','Rettet forhjulet.','Strammet eiker foran.'],
   'Bak':['Byttet slange bak.','Byttet dekk bak.','Rettet bakhjulet.','Strammet eiker bak.'],
   'Foran og bak':['Skiftet til vinterdekk.','Skiftet til sommerdekk.','Byttet slanger foran og bak.','Pumpet dekkene til riktig trykk.']},
+ 'Lager':{
+  'Kranklager':['Byttet kranklager.','Justert kranklageret.'],
+  'Styrelager':['Justert styrelageret.','Byttet styrelager.'],
+  'Hjullager':['Justert navlageret foran.','Justert navlageret bak.','Byttet hjullager.']},
+ 'Demper':{
+  'Gaffel':['Service på gaffelen (nedre del).','Justert lufttrykk i gaffelen.'],
+  'Bakdemper':['Service på bakdemperen (luftkammer).','Justert lufttrykk i bakdemperen.'],
+  'Generelt':['Rengjort og smurt støvtetningene.','Justert sag etter førerens vekt.']},
  'Elsykkel':{
   'Programvare':['Systemet er oppdatert.','Lest av feilkoder – ingen feil.'],
   'Batteri':['Kontrollert batteri og lader.','Batteriet var i dvale – vekket og ladet.'],
   'Sensorer og ledninger':['Byttet hastighetssensor.','Kontrollert kontakter og ledninger.']},
- 'Krank og pedal':{'Pedaler':['Byttet pedaler.','Smurt pedalgjengene.'],'Krank':['Strammet krankarmene.','Byttet krankboks.']},
- 'Styre og sete':{'Styre':['Justert styrelageret.','Byttet styrelager.','Byttet håndtak.','Strammet stem.'],'Sete':['Setepinnen er justert (setet var løst).','Byttet sete.','Smurt setepinnen.']},
+ 'Krank og pedal':{'Pedaler':['Byttet pedaler.','Smurt pedalgjengene.'],'Krank':['Strammet krankarmene.']},
+ 'Styre og sete':{'Styre':['Byttet håndtak.','Byttet styretape.','Strammet stem.'],'Sete':['Setepinnen er justert (setet var løst).','Byttet sete.','Smurt setepinnen.']},
  'Annet':{'Tilbehør':['Montert skjermer.','Montert bagasjebrett.','Montert ringeklokke.','Montert støtte.','Byttet lys.'],'Diverse':['Skrue til støtte ble byttet (Loctite).']}
 };
 const WHY=['fordi det gamle var slitt.','fordi det gamle var skadet.','fordi den var korrodert.','etter kundens ønske.','– anbefales byttet ved neste service.'];
@@ -167,6 +180,9 @@ function render(){renderPre();renderRows();renderTabs();renderGroups()}
 function add(p){if(lines.includes(p)){undoState=[...lines];lines=lines.filter(l=>l!==p);toast('Fjernet',true)}else lines.push(p);save();render()}
 async function copy(){if(!lines.length)return toast('Ingenting å kopiere ennå');try{await navigator.clipboard.writeText(text());toast('Kopiert – lim inn under Intern info')}catch(e){const r=document.createRange();r.selectNodeContents($('pre'));const s=getSelection();s.removeAllRanges();s.addRange(r);toast('Merket – trykk Ctrl+C')}}
 $('freeForm').addEventListener('submit',e=>{e.preventDefault();let v=$('free').value.trim();if(!v)return;if(!/[.!?)]$/.test(v))v+='.';v=v[0].toUpperCase()+v.slice(1);lines.push(v);$('free').value='';save();render()});
+function setMeasure(prefix,line){const i=lines.findIndex(l=>l.startsWith(prefix));if(i>=0)lines[i]=line;else lines.push(line);save();render()}
+$('kjForm').addEventListener('submit',e=>{e.preventDefault();const v=$('kj').value.trim().replace('.',',');if(!/^\d+(,\d+)?$/.test(v))return toast('Skriv bare tallet, f.eks. 0,5');setMeasure('Kjedestrekk:','Kjedestrekk: '+v+' %.');$('kj').value=''});
+$('kmForm').addEventListener('submit',e=>{e.preventDefault();const v=$('km').value.replace(/\s/g,'');if(!/^\d+$/.test(v))return toast('Skriv bare tallet, f.eks. 1250');setMeasure('Km-stand:','Km-stand: '+v.replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' km.');$('km').value=''});
 $('copy').onclick=copy;$('copy2').onclick=copy;
 $('clear').onclick=()=>{if(!lines.length)return;undoState=[...lines];lines=[];save();render();toast('Notatet er tømt',true)};
 $('undo').onclick=()=>{if(undoState){lines=undoState;undoState=null;save();render();$('toast').classList.remove('on')}};
